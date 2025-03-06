@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EmojiPet - Le jeu d'animaux virtuels</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#5D5CDE',
+            secondary: '#3e3e9e',
+            oneui: {
+              light: {
+                bg: '#ffffff',
+                card: '#f5f6f7',
+                text: '#000000',
+                border: '#e1e2e3'
+              },
+              dark: {
+                bg: '#181818',
+                card: '#2d2d2d',
+                text: '#e1e2e3',
+                border: '#404040'
+              }
+            }
+          },
+          animation: {
+            'bounce-slow': 'bounce 2s infinite',
+            'spin-slow': 'spin 3s linear infinite',
+            'pulse-slow': 'pulse 3s infinite',
+            'wiggle': 'wiggle 1s ease-in-out',
+            'float': 'float 3s ease-in-out infinite',
+          },
+          keyframes: {
+            wiggle: {
+              '0%, 100%': { transform: 'rotate(-3deg)' },
+              '50%': { transform: 'rotate(3deg)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Phoenix fire animation */
+    @keyframes phoenix-fire {
+      0% { text-shadow: 0 0 5px #ff0000, 0 0 10px #ff4000; }
+      25% { text-shadow: 0 0 8px #ff8000, 0 0 15px #ffa500; }
+      50% { text-shadow: 0 0 10px #ffb700, 0 0 20px #ffd700; }
+      75% { text-shadow: 0 0 8px #ff8000, 0 0 15px #ffa500; }
+      100% { text-shadow: 0 0 5px #ff0000, 0 0 10px #ff4000; }
+    }
+    
+    /* Shark swimming animation */
+    @keyframes shark-swim {
+      0% { 
+        transform: perspective(800px) rotateY(15deg) rotateX(10deg) translateX(-5px); 
+        text-shadow: 0 0 8px rgba(0, 120, 215, 0.6);
+      }
+      25% {
+        transform: perspective(800px) rotateY(10deg) rotateX(5deg) translateX(0px);
+        text-shadow: 0 0 12px rgba(0, 120, 215, 0.7);
+      }
+      50% { 
+        transform: perspective(800px) rotateY(15deg) rotateX(10deg) translateX(5px); 
+        text-shadow: 0 0 8px rgba(0, 120, 215, 0.6);
+      }
+      75% {
+        transform: perspective(800px) rotateY(20deg) rotateX(15deg) translateX(0px);
+        text-shadow: 0 0 12px rgba(0, 120, 215, 0.7);
+      }
+      100% { 
+        transform: perspective(800px) rotateY(15deg) rotateX(10deg) translateX(-5px); 
+        text-shadow: 0 0 8px rgba(0, 120, 215, 0.6);
+      }
+    }
+    
+    .phoenix-emoji {
+      animation: phoenix-fire 2s infinite;
+    }
+    
+    .phoenix-pet {
+      animation: phoenix-fire 2s infinite !important;
+    }
+    
+    .shark-emoji {
+      animation: shark-swim 4s ease-in-out infinite;
+    }
+    
+    .shark-pet {
+      animation: shark-swim 4s ease-in-out infinite !important;
+    }
+    
+    /* Add water-like bubbles for the shark */
+    .shark-pet::before,
+    .shark-emoji::before {
+      content: '🫧';
+      position: absolute;
+      font-size: 0.8rem;
+      top: -10px;
+      right: -8px;
+      opacity: 0.8;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    /* RGB Theme Effects */
+    @keyframes rgbText {
+      0% { color: #ff0000; }
+      16% { color: #ff8000; }
+      33% { color: #ffff00; }
+      50% { color: #00ff00; }
+      66% { color: #00ffff; }
+      83% { color: #0000ff; }
+      100% { color: #ff00ff; }
+    }
+    
+    @keyframes rgbBorder {
+      0% { border-color: #ff0000; box-shadow: 0 0 8px #ff0000; }
+      16% { border-color: #ff8000; box-shadow: 0 0 8px #ff8000; }
+      33% { border-color: #ffff00; box-shadow: 0 0 8px #ffff00; }
+      50% { border-color: #00ff00; box-shadow: 0 0 8px #00ff00; }
+      66% { border-color: #00ffff; box-shadow: 0 0 8px #00ffff; }
+      83% { border-color: #0000ff; box-shadow: 0 0 8px #0000ff; }
+      100% { border-color: #ff00ff; box-shadow: 0 0 8px #ff00ff; }
+    }
+    
+    @keyframes rgbShadow {
+      0% { text-shadow: 0 0 8px #ff0000; }
+      16% { text-shadow: 0 0 8px #ff8000; }
+      33% { text-shadow: 0 0 8px #ffff00; }
+      50% { text-shadow: 0 0 8px #00ff00; }
+      66% { text-shadow: 0 0 8px #00ffff; }
+      83% { text-shadow: 0 0 8px #0000ff; }
+      100% { text-shadow: 0 0 8px #ff00ff; }
+    }
+    
+    .rgb-mode .emoji-display {
+      animation: rgbShadow 5s linear infinite;
+    }
+    
+    .rgb-mode .oneui-card {
+      border: 2px solid transparent;
+      animation: rgbBorder 5s linear infinite;
+    }
+    
+    .rgb-mode #gameTitle {
+      animation: rgbText 5s linear infinite;
+    }
+    
+    .emoji-display {
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+      position: relative;
+    }
+    
+    .emoji-3d {
+      transform: perspective(800px) rotateY(15deg) rotateX(10deg);
+      box-shadow: -10px 10px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .emoji-selected {
+      animation: pulsate 1s ease-in-out infinite alternate;
+    }
+    
+    .rgb-mode .emoji-selected {
+      animation: rgbShadow 3s linear infinite !important;
+    }
+    
+    .emoji-married::after {
+      content: '💍';
+      position: absolute;
+      bottom: -15px;
+      right: -15px;
+      font-size: 1.2rem;
+      transform: rotate(-15deg);
+      animation: shine 2s ease-in-out infinite;
+    }
+    
+    .emoji-container {
+      position: relative;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .emoji-container:hover {
+      transform: scale(1.1) rotate(5deg);
+    }
+    
+    .emoji-container:active {
+      transform: scale(0.95);
+    }
+    
+    .country-flag {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      font-size: 1rem;
+      filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.3));
+    }
+    
+    @keyframes pulsate {
+      0% { transform: scale(1); text-shadow: 0 0 5px rgba(93, 92, 222, 0.5); }
+      100% { transform: scale(1.1); text-shadow: 0 0 10px rgba(93, 92, 222, 0.8); }
+    }
+    
+    @keyframes shine {
+      0% { opacity: 0.8; transform: rotate(-15deg) scale(1); }
+      50% { opacity: 1; transform: rotate(-15deg) scale(1.2); }
+      100% { opacity: 0.8; transform: rotate(-15deg) scale(1); }
+    }
+    
+    .oneui-card {
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .dark .oneui-card {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .oneui-button {
+      border-radius: 25px;
+      transition: all 0.2s ease;
+    }
+    
+    .oneui-button:active {
+      transform: scale(0.95);
+    }
+    
+    .emoji-evolution-progress {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .dark .emoji-evolution-progress {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .emoji-evolution-bar {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(to right, #5D5CDE, #9f9ef5);
+      transition: width 0.5s ease;
+    }
+    
+    /* Pseudo-3D shadow effect */
+    .shadow-3d {
+      position: relative;
+    }
+    
+    .shadow-3d::after {
+      content: '';
+      position: absolute;
+      width: 80%;
+      height: 15px;
+      border-radius: 50%;
+      bottom: -15px;
+      left: 10%;
+      background: rgba(0, 0, 0, 0.15);
+      filter: blur(5px);
+      z-index: -1;
+      transition: all 0.3s ease;
+    }
+    
+    .emoji-action {
+      transition: all 0.3s ease;
+    }
+    
+    .emoji-action:hover {
+      transform: translateY(-3px);
+    }
+    
+    .emoji-action:active {
+      transform: translateY(1px);
+    }
+    
+    /* Mood indications */
+    .mood-indicator {
+      position: absolute;
+      top: -15px;
+      right: -10px;
+      font-size: 1rem;
+      animation: float 3s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="font-sans bg-oneui-light-bg dark:bg-oneui-dark-bg text-oneui-light-text dark:text-oneui-dark-text transition-colors duration-300">
+  <div class="min-h-screen p-4 md:p-8">
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-6">
+      <h1 id="gameTitle" class="text-3xl font-bold text-primary">EmojiPet</h1>
+      <div class="flex space-x-2">
+        <button id="rgbModeToggle" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+          </svg>
+        </button>
+        <button id="darkModeToggle" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
+          <svg id="sunIcon" class="w-6 h-6 text-yellow-500 hidden dark:inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+          <svg id="moonIcon" class="w-6 h-6 text-slate-700 inline dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+    
+    <!-- Main Game Container -->
+    <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- My EmojiPets Panel -->
+      <section class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 col-span-1 md:col-span-2">
+        <h2 class="text-2xl font-semibold mb-4">Mes EmojiPets</h2>
+        
+        <div id="emojipetsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <!-- EmojiPets will be generated here -->
+        </div>
+        
+        <button id="addEmojiPet" class="oneui-button mt-6 w-full py-3 bg-primary hover:bg-secondary text-white font-semibold transition-colors">
+          Créer un nouveau EmojiPet
+        </button>
+      </section>
+      
+      <!-- Action Panel -->
+      <section class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6">
+        <h2 class="text-2xl font-semibold mb-4">Actions</h2>
+        
+        <div id="selectedPetInfo" class="hidden">
+          <div class="flex items-center space-x-4 mb-6">
+            <div id="selectedEmoji" class="text-6xl emoji-display shadow-3d"></div>
+            <div>
+              <h3 id="selectedName" class="text-xl font-bold"></h3>
+              <p id="selectedCountry" class="text-sm opacity-70"></p>
+              <p id="selectedMood" class="text-sm"></p>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <p class="text-sm mb-1">Niveau d'évolution</p>
+            <div class="emoji-evolution-progress">
+              <div id="evolutionBar" class="emoji-evolution-bar" style="width: 10%;"></div>
+            </div>
+          </div>
+          
+          <div class="space-y-3">
+            <button id="feedPet" class="oneui-button w-full py-2 px-4 bg-green-500 hover:bg-green-600 text-white font-medium emoji-action">
+              🍔 Nourrir
+            </button>
+            <button id="playWithPet" class="oneui-button w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-medium emoji-action">
+              🎾 Jouer
+            </button>
+            <button id="cleanPet" class="oneui-button w-full py-2 px-4 bg-yellow-500 hover:bg-yellow-600 text-white font-medium emoji-action">
+              🛁 Nettoyer
+            </button>
+            <button id="complimentPet" class="oneui-button w-full py-2 px-4 bg-purple-500 hover:bg-purple-600 text-white font-medium emoji-action">
+              💌 Lui parler
+            </button>
+            <button id="marryPet" class="oneui-button w-full py-2 px-4 bg-pink-500 hover:bg-pink-600 text-white font-medium emoji-action">
+              💍 Marier
+            </button>
+            <button id="deletePet" class="oneui-button w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white font-medium emoji-action">
+              🗑️ Supprimer
+            </button>
+          </div>
+        </div>
+        
+        <div id="noSelection" class="text-center py-12">
+          <p class="text-lg text-gray-500 dark:text-gray-400">Sélectionnez un EmojiPet pour interagir</p>
+        </div>
+      </section>
+    </main>
+    
+    <!-- Creation Modal -->
+    <div id="creationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
+      <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+        <h2 class="text-2xl font-semibold mb-4">Créer un EmojiPet</h2>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Nom</label>
+            <input id="petName" type="text" class="w-full p-3 rounded-xl border border-oneui-light-border dark:border-oneui-dark-border bg-white dark:bg-gray-800 text-base" placeholder="Nom de votre EmojiPet">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-1">Type d'animal</label>
+            <div class="grid grid-cols-4 gap-2">
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐶</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐱</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐰</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐼</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦊</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦁</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐮</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐷</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐵</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐻</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐨</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦝</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐲</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦄</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦒</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦓</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐘</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦔</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐢</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐬</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 phoenix-emoji">🦅</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 shark-emoji">🦈</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦖</button>
+              <!-- Humains et emoji inclusifs -->
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🙎‍♀️</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🙎</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🙎‍♂️</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🧑‍🦽</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👨‍🦽</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👩‍🦼</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🧑‍🦼</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👨‍🦯</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🧎‍♀️</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👩‍❤️‍👨</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👩‍❤️‍👩</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👩‍❤️‍💋‍👨</button>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-1">Accessoire</label>
+            <div class="grid grid-cols-4 gap-2">
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🎩</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👑</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🧢</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🕶️</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🧣</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦺</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👔</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦮</button>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-1">Symbole religieux</label>
+            <div class="grid grid-cols-4 gap-2">
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">✝️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">☪️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">✡️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🕉️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">☸️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🕎</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">☯️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">☦️</button>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-1">Pays d'origine</label>
+            <select id="petCountry" class="w-full p-3 rounded-xl border border-oneui-light-border dark:border-oneui-dark-border bg-white dark:bg-gray-800 text-base">
+              <option value="🇦🇫">Afghanistan 🇦🇫</option>
+              <option value="🇿🇦">Afrique du Sud 🇿🇦</option>
+              <option value="🇦🇱">Albanie 🇦🇱</option>
+              <option value="🇩🇿">Algérie 🇩🇿</option>
+              <option value="🇩🇪">Allemagne 🇩🇪</option>
+              <option value="🇦🇩">Andorre 🇦🇩</option>
+              <option value="🇦🇴">Angola 🇦🇴</option>
+              <option value="🇦🇬">Antigua-et-Barbuda 🇦🇬</option>
+              <option value="🇸🇦">Arabie Saoudite 🇸🇦</option>
+              <option value="🇦🇷">Argentine 🇦🇷</option>
+              <option value="🇦🇲">Arménie 🇦🇲</option>
+              <option value="🇦🇺">Australie 🇦🇺</option>
+              <option value="🇦🇹">Autriche 🇦🇹</option>
+              <option value="🇦🇿">Azerbaïdjan 🇦🇿</option>
+              <option value="🇧🇸">Bahamas 🇧🇸</option>
+              <option value="🇧🇭">Bahreïn 🇧🇭</option>
+              <option value="🇧🇩">Bangladesh 🇧🇩</option>
+              <option value="🇧🇧">Barbade 🇧🇧</option>
+              <option value="🇧🇪">Belgique 🇧🇪</option>
+              <option value="🇧🇿">Belize 🇧🇿</option>
+              <option value="🇧🇯">Bénin 🇧🇯</option>
+              <option value="🇧🇹">Bhoutan 🇧🇹</option>
+              <option value="🇧🇾">Biélorussie 🇧🇾</option>
+              <option value="🇲🇲">Birmanie 🇲🇲</option>
+              <option value="🇧🇴">Bolivie 🇧🇴</option>
+              <option value="🇧🇦">Bosnie-Herzégovine 🇧🇦</option>
+              <option value="🇧🇼">Botswana 🇧🇼</option>
+              <option value="🇧🇷">Brésil 🇧🇷</option>
+              <option value="🇧🇳">Brunei 🇧🇳</option>
+              <option value="🇧🇬">Bulgarie 🇧🇬</option>
+              <option value="🇧🇫">Burkina Faso 🇧🇫</option>
+              <option value="🇧🇮">Burundi 🇧🇮</option>
+              <option value="🇰🇭">Cambodge 🇰🇭</option>
+              <option value="🇨🇲">Cameroun 🇨🇲</option>
+              <option value="🇨🇦">Canada 🇨🇦</option>
+              <option value="🇨🇻">Cap-Vert 🇨🇻</option>
+              <option value="🇨🇫">République centrafricaine 🇨🇫</option>
+              <option value="🇨🇱">Chili 🇨🇱</option>
+              <option value="🇨🇳">Chine 🇨🇳</option>
+              <option value="🇨🇾">Chypre 🇨🇾</option>
+              <option value="🇨🇴">Colombie 🇨🇴</option>
+              <option value="🇰🇲">Comores 🇰🇲</option>
+              <option value="🇨🇬">République du Congo 🇨🇬</option>
+              <option value="🇨🇩">République démocratique du Congo 🇨🇩</option>
+              <option value="🇰🇵">Corée du Nord 🇰🇵</option>
+              <option value="🇰🇷">Corée du Sud 🇰🇷</option>
+              <option value="🇨🇷">Costa Rica 🇨🇷</option>
+              <option value="🇨🇮">Côte d'Ivoire 🇨🇮</option>
+              <option value="🇭🇷">Croatie 🇭🇷</option>
+              <option value="🇨🇺">Cuba 🇨🇺</option>
+              <option value="🇩🇰">Danemark 🇩🇰</option>
+              <option value="🇩🇯">Djibouti 🇩🇯</option>
+              <option value="🇩🇲">Dominique 🇩🇲</option>
+              <option value="🇪🇬">Égypte 🇪🇬</option>
+              <option value="🇦🇪">Émirats arabes unis 🇦🇪</option>
+              <option value="🇪🇨">Équateur 🇪🇨</option>
+              <option value="🇪🇷">Érythrée 🇪🇷</option>
+              <option value="🇪🇸">Espagne 🇪🇸</option>
+              <option value="🇪🇪">Estonie 🇪🇪</option>
+              <option value="🇸🇿">Eswatini 🇸🇿</option>
+              <option value="🇺🇸">États-Unis 🇺🇸</option>
+              <option value="🇪🇹">Éthiopie 🇪🇹</option>
+              <option value="🇫🇯">Fidji 🇫🇯</option>
+              <option value="🇫🇮">Finlande 🇫🇮</option>
+              <option value="🇫🇷">France 🇫🇷</option>
+              <option value="🇬🇦">Gabon 🇬🇦</option>
+              <option value="🇬🇲">Gambie 🇬🇲</option>
+              <option value="🇬🇪">Géorgie 🇬🇪</option>
+              <option value="🇬🇭">Ghana 🇬🇭</option>
+              <option value="🇬🇷">Grèce 🇬🇷</option>
+              <option value="🇬🇩">Grenade 🇬🇩</option>
+              <option value="🇬🇹">Guatemala 🇬🇹</option>
+              <option value="🇬🇳">Guinée 🇬🇳</option>
+              <option value="🇬🇶">Guinée équatoriale 🇬🇶</option>
+              <option value="🇬🇼">Guinée-Bissau 🇬🇼</option>
+              <option value="🇬🇾">Guyana 🇬🇾</option>
+              <option value="🇭🇹">Haïti 🇭🇹</option>
+              <option value="🇭🇳">Honduras 🇭🇳</option>
+              <option value="🇭🇺">Hongrie 🇭🇺</option>
+              <option value="🇮🇳">Inde 🇮🇳</option>
+              <option value="🇮🇩">Indonésie 🇮🇩</option>
+              <option value="🇮🇶">Irak 🇮🇶</option>
+              <option value="🇮🇷">Iran 🇮🇷</option>
+              <option value="🇮🇪">Irlande 🇮🇪</option>
+              <option value="🇮🇸">Islande 🇮🇸</option>
+              <option value="🇮🇱">Israël 🇮🇱</option>
+              <option value="🇮🇹">Italie 🇮🇹</option>
+              <option value="🇯🇲">Jamaïque 🇯🇲</option>
+              <option value="🇯🇵">Japon 🇯🇵</option>
+              <option value="🇯🇴">Jordanie 🇯🇴</option>
+              <option value="🇰🇿">Kazakhstan 🇰🇿</option>
+              <option value="🇰🇪">Kenya 🇰🇪</option>
+              <option value="🇰🇬">Kirghizistan 🇰🇬</option>
+              <option value="🇰🇮">Kiribati 🇰🇮</option>
+              <option value="🇰🇼">Koweït 🇰🇼</option>
+              <option value="🇱🇦">Laos 🇱🇦</option>
+              <option value="🇱🇸">Lesotho 🇱🇸</option>
+              <option value="🇱🇻">Lettonie 🇱🇻</option>
+              <option value="🇱🇧">Liban 🇱🇧</option>
+              <option value="🇱🇷">Liberia 🇱🇷</option>
+              <option value="🇱🇾">Libye 🇱🇾</option>
+              <option value="🇱🇮">Liechtenstein 🇱🇮</option>
+              <option value="🇱🇹">Lituanie 🇱🇹</option>
+              <option value="🇱🇺">Luxembourg 🇱🇺</option>
+              <option value="🇲🇰">Macédoine du Nord 🇲🇰</option>
+              <option value="🇲🇬">Madagascar 🇲🇬</option>
+              <option value="🇲🇾">Malaisie 🇲🇾</option>
+              <option value="🇲🇼">Malawi 🇲🇼</option>
+              <option value="🇲🇻">Maldives 🇲🇻</option>
+              <option value="🇲🇱">Mali 🇲🇱</option>
+              <option value="🇲🇹">Malte 🇲🇹</option>
+              <option value="🇲🇦">Maroc 🇲🇦</option>
+              <option value="🇲🇭">Îles Marshall 🇲🇭</option>
+              <option value="🇲🇺">Maurice 🇲🇺</option>
+              <option value="🇲🇷">Mauritanie 🇲🇷</option>
+              <option value="🇲🇽">Mexique 🇲🇽</option>
+              <option value="🇫🇲">Micronésie 🇫🇲</option>
+              <option value="🇲🇩">Moldavie 🇲🇩</option>
+              <option value="🇲🇨">Monaco 🇲🇨</option>
+              <option value="🇲🇳">Mongolie 🇲🇳</option>
+              <option value="🇲🇪">Monténégro 🇲🇪</option>
+              <option value="🇲🇿">Mozambique 🇲🇿</option>
+              <option value="🇳🇦">Namibie 🇳🇦</option>
+              <option value="🇳🇷">Nauru 🇳🇷</option>
+              <option value="🇳🇵">Népal 🇳🇵</option>
+              <option value="🇳🇮">Nicaragua 🇳🇮</option>
+              <option value="🇳🇪">Niger 🇳🇪</option>
+              <option value="🇳🇬">Nigeria 🇳🇬</option>
+              <option value="🇳🇴">Norvège 🇳🇴</option>
+              <option value="🇳🇿">Nouvelle-Zélande 🇳🇿</option>
+              <option value="🇴🇲">Oman 🇴🇲</option>
+              <option value="🇺🇬">Ouganda 🇺🇬</option>
+              <option value="🇺🇿">Ouzbékistan 🇺🇿</option>
+              <option value="🇵🇰">Pakistan 🇵🇰</option>
+              <option value="🇵🇼">Palaos 🇵🇼</option>
+              <option value="🇵🇦">Panama 🇵🇦</option>
+              <option value="🇵🇬">Papouasie-Nouvelle-Guinée 🇵🇬</option>
+              <option value="🇵🇾">Paraguay 🇵🇾</option>
+              <option value="🇳🇱">Pays-Bas 🇳🇱</option>
+              <option value="🇵🇪">Pérou 🇵🇪</option>
+              <option value="🇵🇭">Philippines 🇵🇭</option>
+              <option value="🇵🇱">Pologne 🇵🇱</option>
+              <option value="🇵🇹">Portugal 🇵🇹</option>
+              <option value="🇶🇦">Qatar 🇶🇦</option>
+              <option value="🇷🇴">Roumanie 🇷🇴</option>
+              <option value="🇬🇧">Royaume-Uni 🇬🇧</option>
+              <option value="🇷🇺">Russie 🇷🇺</option>
+              <option value="🇷🇼">Rwanda 🇷🇼</option>
+              <option value="🇰🇳">Saint-Kitts-et-Nevis 🇰🇳</option>
+              <option value="🇱🇨">Sainte-Lucie 🇱🇨</option>
+              <option value="🇻🇨">Saint-Vincent-et-les-Grenadines 🇻🇨</option>
+              <option value="🇸🇲">Saint-Marin 🇸🇲</option>
+              <option value="🇸🇧">Îles Salomon 🇸🇧</option>
+              <option value="🇸🇻">Salvador 🇸🇻</option>
+              <option value="🇼🇸">Samoa 🇼🇸</option>
+              <option value="🇸🇹">Sao Tomé-et-Principe 🇸🇹</option>
+              <option value="🇸🇳">Sénégal 🇸🇳</option>
+              <option value="🇷🇸">Serbie 🇷🇸</option>
+              <option value="🇸🇨">Seychelles 🇸🇨</option>
+              <option value="🇸🇱">Sierra Leone 🇸🇱</option>
+              <option value="🇸🇬">Singapour 🇸🇬</option>
+              <option value="🇸🇰">Slovaquie 🇸🇰</option>
+              <option value="🇸🇮">Slovénie 🇸🇮</option>
+              <option value="🇸🇴">Somalie 🇸🇴</option>
+              <option value="🇸🇩">Soudan 🇸🇩</option>
+              <option value="🇸🇸">Soudan du Sud 🇸🇸</option>
+              <option value="🇱🇰">Sri Lanka 🇱🇰</option>
+              <option value="🇸🇪">Suède 🇸🇪</option>
+              <option value="🇨🇭">Suisse 🇨🇭</option>
+              <option value="🇸🇷">Suriname 🇸🇷</option>
+              <option value="🇸🇾">Syrie 🇸🇾</option>
+              <option value="🇹🇯">Tadjikistan 🇹🇯</option>
+              <option value="🇹🇿">Tanzanie 🇹🇿</option>
+              <option value="🇹🇩">Tchad 🇹🇩</option>
+              <option value="🇨🇿">Tchéquie 🇨🇿</option>
+              <option value="🇹🇭">Thaïlande 🇹🇭</option>
+              <option value="🇹🇱">Timor oriental 🇹🇱</option>
+              <option value="🇹🇬">Togo 🇹🇬</option>
+              <option value="🇹🇴">Tonga 🇹🇴</option>
+              <option value="🇹🇹">Trinité-et-Tobago 🇹🇹</option>
+              <option value="🇹🇳">Tunisie 🇹🇳</option>
+              <option value="🇹🇲">Turkménistan 🇹🇲</option>
+              <option value="🇹🇷">Turquie 🇹🇷</option>
+              <option value="🇹🇻">Tuvalu 🇹🇻</option>
+              <option value="🇺🇦">Ukraine 🇺🇦</option>
+              <option value="🇺🇾">Uruguay 🇺🇾</option>
+              <option value="🇻🇺">Vanuatu 🇻🇺</option>
+              <option value="🇻🇦">Vatican 🇻🇦</option>
+              <option value="🇻🇪">Venezuela 🇻🇪</option>
+              <option value="🇻🇳">Viêt Nam 🇻🇳</option>
+              <option value="🇾🇪">Yémen 🇾🇪</option>
+              <option value="🇿🇲">Zambie 🇿🇲</option>
+              <option value="🇿🇼">Zimbabwe 🇿🇼</option>
+            </select>
+          </div>
+          
+          <div class="pt-4 flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
+            <button id="cancelCreation" class="oneui-button py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-xl font-medium">
+              Annuler
+            </button>
+            <button id="confirmCreation" class="oneui-button py-2 px-4 bg-primary hover:bg-secondary text-white font-medium">
+              Créer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Marriage Modal -->
+    <div id="marriageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
+      <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4">
+        <h2 class="text-2xl font-semibold mb-4">Marier votre EmojiPet</h2>
+        
+        <div id="marriagePetsList" class="grid grid-cols-2 gap-3 mb-6">
+          <!-- Available pets for marriage will be listed here -->
+        </div>
+        
+        <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
+          <button id="cancelMarriage" class="oneui-button py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-xl font-medium">
+            Annuler
+          </button>
+        </div>
+      </div>
+    </div>
+  
+  <!-- Compliment Modal -->
+  <div id="complimentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
+    <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4">
+      <h2 class="text-2xl font-semibold mb-4">Parler à <span id="complimentPetName"></span></h2>
+      
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+          <span class="text-2xl mb-2">😘</span>
+          <div class="font-medium">Bisou</div>
+        </button>
+        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+          <span class="text-2xl mb-2">❤️</span>
+          <div class="font-medium">Je t'aime</div>
+        </button>
+        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+          <span class="text-2xl mb-2">🥰</span>
+          <div class="font-medium">Je t'adore</div>
+        </button>
+        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+          <span class="text-2xl mb-2">🏆</span>
+          <div class="font-medium">Tu es le meilleur</div>
+        </button>
+        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+          <span class="text-2xl mb-2">✨</span>
+          <div class="font-medium">Tu es magnifique</div>
+        </button>
+        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+          <span class="text-2xl mb-2">🌟</span>
+          <div class="font-medium">Tu es spécial</div>
+        </button>
+        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+          <span class="text-2xl mb-2">🤗</span>
+          <div class="font-medium">Câlin</div>
+        </button>
+        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+          <span class="text-2xl mb-2">🙌</span>
+          <div class="font-medium">Bravo!</div>
+        </button>
+      </div>
+      
+      <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
+        <button id="cancelCompliment" class="oneui-button py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-xl font-medium">
+          Fermer
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
+    <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4">
+      <h2 class="text-2xl font-semibold mb-4">Supprimer l'EmojiPet</h2>
+      
+      <p class="mb-6 text-gray-700 dark:text-gray-300">Êtes-vous sûr de vouloir supprimer cet EmojiPet ? Cette action est irréversible.</p>
+      
+      <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
+        <button id="cancelDelete" class="oneui-button py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-xl font-medium">
+          Annuler
+        </button>
+        <button id="confirmDelete" class="oneui-button py-2 px-4 bg-red-500 hover:bg-red-600 text-white font-medium">
+          Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Dark mode detection & toggle
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark');
+    }
+    
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+      if (event.matches) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    });
+    
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+    
+    // RGB Mode Toggle
+    document.getElementById('rgbModeToggle').addEventListener('click', () => {
+      document.documentElement.classList.toggle('rgb-mode');
+    });
+    
+    // Delete confirmation modal event listeners
+    document.getElementById('cancelDelete').addEventListener('click', hideDeleteConfirmation);
+    document.getElementById('confirmDelete').addEventListener('click', deleteSelectedPet);
+    
+    // Main game data
+    let pets = [];
+    let selectedPet = null;
+    let selectedEmoji = null;
+    let selectedAccessory = null;
+    let selectedReligion = null;
+    
+    // Emojis and emotions
+    const petEmotions = ['😃', '😊', '😢', '😍', '😴', '🤒', '😋'];
+    const petEvolutions = {
+      '🐶': ['🐕', '🐕‍🦺'],
+      '🐱': ['🐈', '🐈‍⬛'],
+      '🐰': ['🐇', '🐇'],
+      '🐼': ['🐼', '🐼'],
+      '🦊': ['🦊', '🦊'],
+      '🦁': ['🦁', '🦁'],
+      '🐮': ['🐄', '🐄'],
+      '🐷': ['🐖', '🐖'],
+      '🐵': ['🐒', '🦍'],
+      '🐻': ['🐻', '🐻‍❄️'],
+      '🐨': ['🐨', '🐨'],
+      '🦝': ['🦝', '🦝'],
+      '🐲': ['🐉', '🐉'],
+      '🦄': ['🦄', '🦄'],
+      '🦒': ['🦒', '🦒'],
+      '🦓': ['🦓', '🦓'],
+      '🐘': ['🐘', '🐘'],
+      '🦔': ['🦔', '🦔'],
+      '🐢': ['🐢', '🐢'],
+      '🐬': ['🐬', '🐬'],
+      '🦅': ['🦅', '🦅'],   // Phénix (avec animation de feu spéciale)
+      '🦈': ['🦈', '🦈'],   // Requin
+      '🦖': ['🦖', '🦕'],   // T-Rex évolue en Brachiosaurus
+      
+      // Personnages humains
+      '🙎‍♀️': ['🙎‍♀️', '🙎‍♀️'],
+      '🙎': ['🙎', '🙎'],
+      '🙎‍♂️': ['🙎‍♂️', '🙎‍♂️'],
+      '🧑‍🦽': ['🧑‍🦽', '🧑‍🦽'],
+      '👨‍🦽': ['👨‍🦽', '👨‍🦽'],
+      '👩‍🦼': ['👩‍🦼', '👩‍🦼'],
+      '🧑‍🦼': ['🧑‍🦼', '🧑‍🦼'],
+      '👨‍🦯': ['👨‍🦯', '👨‍🦯'],
+      '🧎‍♀️': ['🧎‍♀️', '🧎‍♀️'],
+      '👩‍❤️‍👨': ['👩‍❤️‍👨', '👩‍❤️‍💋‍👨'],
+      '👩‍❤️‍👩': ['👩‍❤️‍👩', '👩‍❤️‍💋‍👩'],
+      '👩‍❤️‍💋‍👨': ['👩‍❤️‍💋‍👨', '👪']
+    };
+    
+    // Initialize game
+    function initGame() {
+      // Create some sample pets to start with
+      if (pets.length === 0) {
+        const samplePet = {
+          id: Date.now().toString(),
+          name: "Fluffy",
+          emoji: "🐶",
+          accessory: "🧣",
+          country: "🇫🇷",
+          happiness: 100,
+          hunger: 80,
+          cleanliness: 100,
+          xp: 0,
+          evolutionStage: 0,
+          evolutionThreshold: 100,
+          marriedTo: null,
+          createdAt: Date.now(),
+          lastInteraction: Date.now(),
+          mood: 3
+        };
+        pets.push(samplePet);
+      }
+      renderPets();
+      
+      // UI event listeners
+      document.getElementById('addEmojiPet').addEventListener('click', showCreationModal);
+      document.getElementById('cancelCreation').addEventListener('click', hideCreationModal);
+      document.getElementById('confirmCreation').addEventListener('click', createNewPet);
+      document.getElementById('feedPet').addEventListener('click', feedSelectedPet);
+      document.getElementById('playWithPet').addEventListener('click', playWithSelectedPet);
+      document.getElementById('cleanPet').addEventListener('click', cleanSelectedPet);
+      document.getElementById('complimentPet').addEventListener('click', showComplimentModal);
+      document.getElementById('marryPet').addEventListener('click', showMarriageModal);
+      document.getElementById('cancelMarriage').addEventListener('click', hideMarriageModal);
+      document.getElementById('cancelCompliment').addEventListener('click', hideComplimentModal);
+      document.getElementById('deletePet').addEventListener('click', showDeleteConfirmation);
+      
+      // Set up emoji and accessory selection
+      document.querySelectorAll('.emoji-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.emoji-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
+          btn.classList.add('ring-2', 'ring-primary');
+          selectedEmoji = btn.textContent;
+        });
+      });
+      
+      document.querySelectorAll('.accessory-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.accessory-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
+          btn.classList.add('ring-2', 'ring-primary');
+          selectedAccessory = btn.textContent;
+        });
+      });
+      
+      document.querySelectorAll('.religion-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.religion-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
+          btn.classList.add('ring-2', 'ring-primary');
+          selectedReligion = btn.textContent;
+        });
+      });
+      
+      // Start game loop for evolution and status changes
+      setInterval(gameLoop, 30000); // Run every 30 seconds
+    }
+    
+    // Game loop for passive changes and evolution
+    function gameLoop() {
+      const now = Date.now();
+      
+      pets.forEach(pet => {
+        // Decrease happiness and hunger over time
+        pet.happiness = Math.max(0, pet.happiness - 2);
+        pet.hunger = Math.max(0, pet.hunger - 3);
+        
+        // Evolve pet if conditions are met
+        if (pet.xp >= pet.evolutionThreshold && pet.evolutionStage < 2) {
+          evolvePet(pet);
+        }
+        
+        // Update mood based on stats
+        updatePetMood(pet);
+        
+        // Save changes
+        savePets();
+      });
+      
+      // Re-render if a pet is selected
+      if (selectedPet) {
+        const updatedPet = pets.find(p => p.id === selectedPet.id);
+        if (updatedPet) {
+          selectedPet = updatedPet;
+          renderPetDetails(selectedPet);
+        }
+      }
+      
+      renderPets();
+    }
+    
+    // Render all pets in the container
+    function renderPets() {
+      const container = document.getElementById('emojipetsContainer');
+      container.innerHTML = '';
+      
+      pets.forEach(pet => {
+        const petElement = document.createElement('div');
+        petElement.className = 'emoji-container shadow-3d p-4 bg-white dark:bg-gray-800 rounded-2xl cursor-pointer relative flex flex-col items-center';
+        petElement.dataset.petId = pet.id;
+        
+        // Add country flag
+        const flagElement = document.createElement('span');
+        flagElement.className = 'country-flag';
+        flagElement.textContent = pet.country;
+        petElement.appendChild(flagElement);
+        
+        // Add the main emoji with potential 3D effect
+        const emojiElement = document.createElement('div');
+        emojiElement.className = 'emoji-display text-6xl mb-2';
+        emojiElement.textContent = pet.emoji;
+        
+        // Add 3D effect
+        emojiElement.classList.add('emoji-3d');
+        
+        // Add special effects for certain creature types
+        if (pet.emoji === '🦅') {
+          // Add phoenix fire effect
+          emojiElement.classList.add('phoenix-pet');
+        } else if (pet.emoji === '🦈') {
+          // Add shark swimming effect
+          emojiElement.classList.add('shark-pet');
+        }
+        
+        // Add accessory if present
+        if (pet.accessory) {
+          const accessoryElement = document.createElement('div');
+          accessoryElement.className = 'absolute top-1 left-1/2 transform -translate-x-1/2 -translate-y-1/4 text-3xl';
+          accessoryElement.textContent = pet.accessory;
+          petElement.appendChild(accessoryElement);
+        }
+        
+        // Add religion symbol if present
+        if (pet.religion) {
+          const religionElement = document.createElement('div');
+          religionElement.className = 'absolute bottom-12 right-1 text-xl';
+          religionElement.textContent = pet.religion;
+          petElement.appendChild(religionElement);
+        }
+        
+        // Add married indicator
+        if (pet.marriedTo) {
+          emojiElement.classList.add('emoji-married');
+        }
+        
+        // Add mood indicator
+        const moodElement = document.createElement('div');
+        moodElement.className = 'mood-indicator';
+        moodElement.textContent = getPetMoodEmoji(pet);
+        petElement.appendChild(moodElement);
+        
+        petElement.appendChild(emojiElement);
+        
+        // Add name
+        const nameElement = document.createElement('span');
+        nameElement.className = 'font-medium text-center mt-1';
+        nameElement.textContent = pet.name;
+        petElement.appendChild(nameElement);
+        
+        // Add event listener
+        petElement.addEventListener('click', () => selectPet(pet));
+        
+        container.appendChild(petElement);
+      });
+    }
+    
+    // Select a pet
+    function selectPet(pet) {
+      selectedPet = pet;
+      
+      document.getElementById('noSelection').classList.add('hidden');
+      document.getElementById('selectedPetInfo').classList.remove('hidden');
+      
+      renderPetDetails(pet);
+      
+      // Select the pet in the grid
+      document.querySelectorAll('.emoji-container').forEach(el => {
+        if (el.dataset.petId === pet.id) {
+          el.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+          
+          // Add animation to the selected pet
+          const emojiEl = el.querySelector('.emoji-display');
+          emojiEl.classList.add('emoji-selected');
+        } else {
+          el.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+          const emojiEl = el.querySelector('.emoji-display');
+          emojiEl.classList.remove('emoji-selected');
+        }
+      });
+    }
+    
+    // Render selected pet details
+    function renderPetDetails(pet) {
+      document.getElementById('selectedEmoji').textContent = pet.emoji;
+      document.getElementById('selectedName').textContent = pet.name;
+      document.getElementById('selectedCountry').textContent = `Origine: ${getCountryName(pet.country)}`;
+      document.getElementById('selectedMood').textContent = `Humeur: ${getPetMoodText(pet)}`;
+      
+      // Update evolution progress bar
+      const evolutionPercentage = (pet.xp / pet.evolutionThreshold) * 100;
+      document.getElementById('evolutionBar').style.width = `${Math.min(100, evolutionPercentage)}%`;
+      
+      // Add 3D effect to the selected emoji
+      document.getElementById('selectedEmoji').classList.add('emoji-3d');
+      
+      // Add special effects for certain creature types
+      const selectedEmojiElement = document.getElementById('selectedEmoji');
+      selectedEmojiElement.classList.remove('phoenix-pet', 'shark-pet');
+      
+      // Apply special effects based on emoji type
+      if (pet.emoji === '🦅') {
+        // Add phoenix fire effect
+        selectedEmojiElement.classList.add('phoenix-pet');
+      } else if (pet.emoji === '🦈') {
+        // Add shark swimming effect
+        selectedEmojiElement.classList.add('shark-pet');
+      }
+      
+      // Add married indicator if applicable
+      if (pet.marriedTo) {
+        document.getElementById('selectedEmoji').classList.add('emoji-married');
+        
+        // Find partner
+        const partner = pets.find(p => p.id === pet.marriedTo);
+        if (partner) {
+          document.getElementById('selectedMood').textContent += ` 💑 Marié(e) à ${partner.name}`;
+        }
+      } else {
+        document.getElementById('selectedEmoji').classList.remove('emoji-married');
+      }
+      
+      // Update button states
+      document.getElementById('marryPet').disabled = !!pet.marriedTo;
+      document.getElementById('marryPet').textContent = pet.marriedTo ? '💍 Déjà marié(e)' : '💍 Marier';
+    }
+    
+    // Show creation modal
+    function showCreationModal() {
+      document.getElementById('creationModal').classList.remove('hidden');
+      document.getElementById('petName').value = '';
+      selectedEmoji = null;
+      selectedAccessory = null;
+      selectedReligion = null;
+      
+      document.querySelectorAll('.emoji-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
+      document.querySelectorAll('.accessory-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
+      document.querySelectorAll('.religion-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
+    }
+    
+    // Hide creation modal
+    function hideCreationModal() {
+      document.getElementById('creationModal').classList.add('hidden');
+    }
+    
+    // Create a new pet
+    function createNewPet() {
+      const name = document.getElementById('petName').value.trim();
+      const country = document.getElementById('petCountry').value;
+      
+      if (!name || !selectedEmoji) {
+        // Show error
+        return;
+      }
+      
+      const newPet = {
+        id: Date.now().toString(),
+        name: name,
+        emoji: selectedEmoji,
+        accessory: selectedAccessory || null,
+        religion: selectedReligion || null,
+        country: country,
+        happiness: 100,
+        hunger: 100,
+        cleanliness: 100,
+        xp: 0,
+        evolutionStage: 0,
+        evolutionThreshold: 100,
+        marriedTo: null,
+        createdAt: Date.now(),
+        lastInteraction: Date.now()
+      };
+      
+      pets.push(newPet);
+      savePets();
+      renderPets();
+      hideCreationModal();
+      
+      // Select the newly created pet
+      selectPet(newPet);
+      
+      // Add animation for the new pet
+      setTimeout(() => {
+        const petEl = document.querySelector(`[data-pet-id="${newPet.id}"]`);
+        if (petEl) {
+          petEl.classList.add('animate-bounce-slow');
+          setTimeout(() => {
+            petEl.classList.remove('animate-bounce-slow');
+          }, 2000);
+        }
+      }, 100);
+    }
+    
+    // Feed the selected pet
+    function feedSelectedPet() {
+      if (!selectedPet) return;
+      
+      const pet = pets.find(p => p.id === selectedPet.id);
+      if (pet) {
+        pet.hunger = Math.min(100, pet.hunger + 30);
+        pet.happiness = Math.min(100, pet.happiness + 5);
+        pet.xp += 5;
+        pet.lastInteraction = Date.now();
+        
+        updatePetMood(pet);
+        savePets();
+        renderPetDetails(pet);
+        renderPets();
+        
+        // Animation
+        showActionAnimation('🍔');
+      }
+    }
+    
+    // Play with the selected pet
+    function playWithSelectedPet() {
+      if (!selectedPet) return;
+      
+      const pet = pets.find(p => p.id === selectedPet.id);
+      if (pet) {
+        pet.happiness = Math.min(100, pet.happiness + 30);
+        pet.hunger = Math.max(0, pet.hunger - 10);
+        pet.xp += 10;
+        pet.lastInteraction = Date.now();
+        
+        updatePetMood(pet);
+        savePets();
+        renderPetDetails(pet);
+        renderPets();
+        
+        // Animation
+        showActionAnimation('🎾');
+      }
+    }
+    
+    // Clean the selected pet
+    function cleanSelectedPet() {
+      if (!selectedPet) return;
+      
+      const pet = pets.find(p => p.id === selectedPet.id);
+      if (pet) {
+        pet.cleanliness = 100;
+        pet.happiness = Math.min(100, pet.happiness + 10);
+        pet.xp += 5;
+        pet.lastInteraction = Date.now();
+        
+        updatePetMood(pet);
+        savePets();
+        renderPetDetails(pet);
+        renderPets();
+        
+        // Animation
+        showActionAnimation('✨');
+      }
+    }
+    
+    // Show marriage modal
+    function showMarriageModal() {
+      if (!selectedPet || selectedPet.marriedTo) return;
+      
+      const marriageList = document.getElementById('marriagePetsList');
+      marriageList.innerHTML = '';
+      
+      // Find eligible pets (not married and not the currently selected pet)
+      const eligiblePets = pets.filter(p => p.id !== selectedPet.id && !p.marriedTo);
+      
+      if (eligiblePets.length === 0) {
+        marriageList.innerHTML = '<p class="col-span-2 text-center py-4 text-gray-500">Aucun EmojiPet disponible pour un mariage</p>';
+      } else {
+        eligiblePets.forEach(pet => {
+          const petEl = document.createElement('div');
+          petEl.className = 'p-4 bg-white dark:bg-gray-800 rounded-xl flex flex-col items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors';
+          
+          const emojiEl = document.createElement('div');
+          emojiEl.className = 'text-4xl mb-2';
+          emojiEl.textContent = pet.emoji;
+          
+          const nameEl = document.createElement('div');
+          nameEl.className = 'font-medium text-center';
+          nameEl.textContent = pet.name;
+          
+          const flagEl = document.createElement('div');
+          flagEl.className = 'text-sm';
+          flagEl.textContent = pet.country;
+          
+          petEl.appendChild(emojiEl);
+          petEl.appendChild(nameEl);
+          petEl.appendChild(flagEl);
+          
+          petEl.addEventListener('click', () => marryPets(selectedPet, pet));
+          
+          marriageList.appendChild(petEl);
+        });
+      }
+      
+      document.getElementById('marriageModal').classList.remove('hidden');
+    }
+    
+    // Hide marriage modal
+    function hideMarriageModal() {
+      document.getElementById('marriageModal').classList.add('hidden');
+    }
+    
+    // Marry two pets
+    function marryPets(pet1, pet2) {
+      pet1.marriedTo = pet2.id;
+      pet2.marriedTo = pet1.id;
+      
+      pet1.happiness = 100;
+      pet2.happiness = 100;
+      
+      pet1.xp += 20;
+      pet2.xp += 20;
+      
+      savePets();
+      renderPets();
+      renderPetDetails(pet1);
+      hideMarriageModal();
+      
+      // Show marriage animation
+      showActionAnimation('💕');
+      
+      // Animate both pets
+      setTimeout(() => {
+        const pet1El = document.querySelector(`[data-pet-id="${pet1.id}"]`);
+        const pet2El = document.querySelector(`[data-pet-id="${pet2.id}"]`);
+        
+        if (pet1El) {
+          pet1El.classList.add('animate-pulse-slow');
+          setTimeout(() => pet1El.classList.remove('animate-pulse-slow'), 3000);
+        }
+        
+        if (pet2El) {
+          pet2El.classList.add('animate-pulse-slow');
+          setTimeout(() => pet2El.classList.remove('animate-pulse-slow'), 3000);
+        }
+      }, 100);
+    }
+    
+    // Evolve a pet
+    function evolvePet(pet) {
+      if (pet.evolutionStage >= 2) return;
+      
+      // Evolve to next stage
+      pet.evolutionStage++;
+      
+      // Update emoji to evolved form
+      if (petEvolutions[pet.emoji]) {
+        pet.emoji = petEvolutions[pet.emoji][pet.evolutionStage - 1];
+      }
+      
+      // Increase evolution threshold for next evolution
+      pet.evolutionThreshold = pet.evolutionStage === 1 ? 200 : 300;
+      
+      savePets();
+      
+      // Show evolution animation
+      if (selectedPet && selectedPet.id === pet.id) {
+        showActionAnimation('⭐');
+      }
+      
+      // Find the pet element
+      setTimeout(() => {
+        const petEl = document.querySelector(`[data-pet-id="${pet.id}"]`);
+        if (petEl) {
+          petEl.classList.add('animate-pulse-slow');
+          setTimeout(() => petEl.classList.remove('animate-pulse-slow'), 3000);
+        }
+      }, 100);
+    }
+    
+    // Show action animation
+    function showActionAnimation(emoji) {
+      const container = document.querySelector(`[data-pet-id="${selectedPet.id}"]`);
+      if (!container) return;
+      
+      const animation = document.createElement('div');
+      animation.className = 'absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full text-3xl animate-float';
+      animation.textContent = emoji;
+      animation.style.zIndex = 5;
+      
+      container.appendChild(animation);
+      
+      setTimeout(() => {
+        animation.remove();
+      }, 2000);
+    }
+    
+    // Update pet mood based on stats
+    function updatePetMood(pet) {
+      let moodIndex = 0;
+      
+      const averageStat = (pet.happiness + pet.hunger + pet.cleanliness) / 3;
+      
+      if (averageStat > 80) moodIndex = 3; // 😍
+      else if (averageStat > 60) moodIndex = 0; // 😃
+      else if (averageStat > 40) moodIndex = 1; // 😊
+      else if (averageStat > 20) moodIndex = 2; // 😢
+      else moodIndex = 5; // 🤒
+      
+      pet.mood = moodIndex;
+    }
+    
+    // Get pet mood emoji
+    function getPetMoodEmoji(pet) {
+      return petEmotions[pet.mood || 0];
+    }
+    
+    // Get pet mood text
+    function getPetMoodText(pet) {
+      const moodEmoji = getPetMoodEmoji(pet);
+      let moodText = '';
+      
+      switch (moodEmoji) {
+        case '😃': moodText = 'Heureux'; break;
+        case '😊': moodText = 'Content'; break;
+        case '😢': moodText = 'Triste'; break;
+        case '😍': moodText = 'Adorable'; break;
+        case '😴': moodText = 'Fatigué'; break;
+        case '🤒': moodText = 'Malade'; break;
+        case '😋': moodText = 'Affamé'; break;
+        default: moodText = 'Normal';
+      }
+      
+      return `${moodText} ${moodEmoji}`;
+    }
+    
+    // Get country name from flag emoji
+    function getCountryName(flag) {
+      const countries = {
+        '🇦🇫': 'Afghanistan',
+        '🇿🇦': 'Afrique du Sud',
+        '🇦🇱': 'Albanie',
+        '🇩🇿': 'Algérie',
+        '🇩🇪': 'Allemagne',
+        '🇦🇩': 'Andorre',
+        '🇦🇴': 'Angola',
+        '🇦🇬': 'Antigua-et-Barbuda',
+        '🇸🇦': 'Arabie Saoudite',
+        '🇦🇷': 'Argentine',
+        '🇦🇲': 'Arménie',
+        '🇦🇺': 'Australie',
+        '🇦🇹': 'Autriche',
+        '🇦🇿': 'Azerbaïdjan',
+        '🇧🇸': 'Bahamas',
+        '🇧🇭': 'Bahreïn',
+        '🇧🇩': 'Bangladesh',
+        '🇧🇧': 'Barbade',
+        '🇧🇪': 'Belgique',
+        '🇧🇿': 'Belize',
+        '🇧🇯': 'Bénin',
+        '🇧🇹': 'Bhoutan',
+        '🇧🇾': 'Biélorussie',
+        '🇲🇲': 'Birmanie',
+        '🇧🇴': 'Bolivie',
+        '🇧🇦': 'Bosnie-Herzégovine',
+        '🇧🇼': 'Botswana',
+        '🇧🇷': 'Brésil',
+        '🇧🇳': 'Brunei',
+        '🇧🇬': 'Bulgarie',
+        '🇧🇫': 'Burkina Faso',
+        '🇧🇮': 'Burundi',
+        '🇰🇭': 'Cambodge',
+        '🇨🇲': 'Cameroun',
+        '🇨🇦': 'Canada',
+        '🇨🇻': 'Cap-Vert',
+        '🇨🇫': 'République centrafricaine',
+        '🇨🇱': 'Chili',
+        '🇨🇳': 'Chine',
+        '🇨🇾': 'Chypre',
+        '🇨🇴': 'Colombie',
+        '🇰🇲': 'Comores',
+        '🇨🇬': 'République du Congo',
+        '🇨🇩': 'République démocratique du Congo',
+        '🇰🇵': 'Corée du Nord',
+        '🇰🇷': 'Corée du Sud',
+        '🇨🇷': 'Costa Rica',
+        '🇨🇮': 'Côte d\'Ivoire',
+        '🇭🇷': 'Croatie',
+        '🇨🇺': 'Cuba',
+        '🇩🇰': 'Danemark',
+        '🇩🇯': 'Djibouti',
+        '🇩🇲': 'Dominique',
+        '🇪🇬': 'Égypte',
+        '🇦🇪': 'Émirats arabes unis',
+        '🇪🇨': 'Équateur',
+        '🇪🇷': 'Érythrée',
+        '🇪🇸': 'Espagne',
+        '🇪🇪': 'Estonie',
+        '🇸🇿': 'Eswatini',
+        '🇺🇸': 'États-Unis',
+        '🇪🇹': 'Éthiopie',
+        '🇫🇯': 'Fidji',
+        '🇫🇮': 'Finlande',
+        '🇫🇷': 'France',
+        '🇬🇦': 'Gabon',
+        '🇬🇲': 'Gambie',
+        '🇬🇪': 'Géorgie',
+        '🇬🇭': 'Ghana',
+        '🇬🇷': 'Grèce',
+        '🇬🇩': 'Grenade',
+        '🇬🇹': 'Guatemala',
+        '🇬🇳': 'Guinée',
+        '🇬🇶': 'Guinée équatoriale',
+        '🇬🇼': 'Guinée-Bissau',
+        '🇬🇾': 'Guyana',
+        '🇭🇹': 'Haïti',
+        '🇭🇳': 'Honduras',
+        '🇭🇺': 'Hongrie',
+        '🇮🇳': 'Inde',
+        '🇮🇩': 'Indonésie',
+        '🇮🇶': 'Irak',
+        '🇮🇷': 'Iran',
+        '🇮🇪': 'Irlande',
+        '🇮🇸': 'Islande',
+        '🇮🇱': 'Israël',
+        '🇮🇹': 'Italie',
+        '🇯🇲': 'Jamaïque',
+        '🇯🇵': 'Japon',
+        '🇯🇴': 'Jordanie',
+        '🇰🇿': 'Kazakhstan',
+        '🇰🇪': 'Kenya',
+        '🇰🇬': 'Kirghizistan',
+        '🇰🇮': 'Kiribati',
+        '🇰🇼': 'Koweït',
+        '🇱🇦': 'Laos',
+        '🇱🇸': 'Lesotho',
+        '🇱🇻': 'Lettonie',
+        '🇱🇧': 'Liban',
+        '🇱🇷': 'Liberia',
+        '🇱🇾': 'Libye',
+        '🇱🇮': 'Liechtenstein',
+        '🇱🇹': 'Lituanie',
+        '🇱🇺': 'Luxembourg',
+        '🇲🇰': 'Macédoine du Nord',
+        '🇲🇬': 'Madagascar',
+        '🇲🇾': 'Malaisie',
+        '🇲🇼': 'Malawi',
+        '🇲🇻': 'Maldives',
+        '🇲🇱': 'Mali',
+        '🇲🇹': 'Malte',
+        '🇲🇦': 'Maroc',
+        '🇲🇭': 'Îles Marshall',
+        '🇲🇺': 'Maurice',
+        '🇲🇷': 'Mauritanie',
+        '🇲🇽': 'Mexique',
+        '🇫🇲': 'Micronésie',
+        '🇲🇩': 'Moldavie',
+        '🇲🇨': 'Monaco',
+        '🇲🇳': 'Mongolie',
+        '🇲🇪': 'Monténégro',
+        '🇲🇿': 'Mozambique',
+        '🇳🇦': 'Namibie',
+        '🇳🇷': 'Nauru',
+        '🇳🇵': 'Népal',
+        '🇳🇮': 'Nicaragua',
+        '🇳🇪': 'Niger',
+        '🇳🇬': 'Nigeria',
+        '🇳🇴': 'Norvège',
+        '🇳🇿': 'Nouvelle-Zélande',
+        '🇴🇲': 'Oman',
+        '🇺🇬': 'Ouganda',
+        '🇺🇿': 'Ouzbékistan',
+        '🇵🇰': 'Pakistan',
+        '🇵🇼': 'Palaos',
+        '🇵🇦': 'Panama',
+        '🇵🇬': 'Papouasie-Nouvelle-Guinée',
+        '🇵🇾': 'Paraguay',
+        '🇳🇱': 'Pays-Bas',
+        '🇵🇪': 'Pérou',
+        '🇵🇭': 'Philippines',
+        '🇵🇱': 'Pologne',
+        '🇵🇹': 'Portugal',
+        '🇶🇦': 'Qatar',
+        '🇷🇴': 'Roumanie',
+        '🇬🇧': 'Royaume-Uni',
+        '🇷🇺': 'Russie',
+        '🇷🇼': 'Rwanda',
+        '🇰🇳': 'Saint-Kitts-et-Nevis',
+        '🇱🇨': 'Sainte-Lucie',
+        '🇻🇨': 'Saint-Vincent-et-les-Grenadines',
+        '🇸🇲': 'Saint-Marin',
+        '🇸🇧': 'Îles Salomon',
+        '🇸🇻': 'Salvador',
+        '🇼🇸': 'Samoa',
+        '🇸🇹': 'Sao Tomé-et-Principe',
+        '🇸🇳': 'Sénégal',
+        '🇷🇸': 'Serbie',
+        '🇸🇨': 'Seychelles',
+        '🇸🇱': 'Sierra Leone',
+        '🇸🇬': 'Singapour',
+        '🇸🇰': 'Slovaquie',
+        '🇸🇮': 'Slovénie',
+        '🇸🇴': 'Somalie',
+        '🇸🇩': 'Soudan',
+        '🇸🇸': 'Soudan du Sud',
+        '🇱🇰': 'Sri Lanka',
+        '🇸🇪': 'Suède',
+        '🇨🇭': 'Suisse',
+        '🇸🇷': 'Suriname',
+        '🇸🇾': 'Syrie',
+        '🇹🇯': 'Tadjikistan',
+        '🇹🇿': 'Tanzanie',
+        '🇹🇩': 'Tchad',
+        '🇨🇿': 'Tchéquie',
+        '🇹🇭': 'Thaïlande',
+        '🇹🇱': 'Timor oriental',
+        '🇹🇬': 'Togo',
+        '🇹🇴': 'Tonga',
+        '🇹🇹': 'Trinité-et-Tobago',
+        '🇹🇳': 'Tunisie',
+        '🇹🇲': 'Turkménistan',
+        '🇹🇷': 'Turquie',
+        '🇹🇻': 'Tuvalu',
+        '🇺🇦': 'Ukraine',
+        '🇺🇾': 'Uruguay',
+        '🇻🇺': 'Vanuatu',
+        '🇻🇦': 'Vatican',
+        '🇻🇪': 'Venezuela',
+        '🇻🇳': 'Viêt Nam',
+        '🇾🇪': 'Yémen',
+        '🇿🇲': 'Zambie',
+        '🇿🇼': 'Zimbabwe'
+      };
+      
+      return countries[flag] || flag;
+    }
+    
+    // Show compliment modal
+    function showComplimentModal() {
+      if (!selectedPet) return;
+      
+      document.getElementById('complimentPetName').textContent = selectedPet.name;
+      document.getElementById('complimentModal').classList.remove('hidden');
+      
+      // Add event listeners to phrase options
+      document.querySelectorAll('.phrase-option').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const petMessage = this.querySelector('.font-medium').textContent;
+          const emojiIcon = this.querySelector('.text-2xl').textContent;
+          sayToPet(selectedPet, petMessage, emojiIcon);
+          hideComplimentModal();
+        });
+      });
+    }
+    
+    // Hide compliment modal
+    function hideComplimentModal() {
+      document.getElementById('complimentModal').classList.add('hidden');
+    }
+    
+    // Say something to pet
+    function sayToPet(pet, message, emoji) {
+      if (!pet) return;
+      
+      const petObj = pets.find(p => p.id === pet.id);
+      if (petObj) {
+        // Add happiness based on message
+        let happinessBoost = 15;
+        
+        // Special bonuses
+        if (message === 'Je t\'aime' || message === 'Je t\'adore') {
+          happinessBoost = 25;
+        } else if (message === 'Tu es le meilleur' || message === 'Tu es magnifique') {
+          happinessBoost = 20;
+        }
+        
+        petObj.happiness = Math.min(100, petObj.happiness + happinessBoost);
+        petObj.xp += 8;
+        petObj.lastInteraction = Date.now();
+        
+        updatePetMood(petObj);
+        savePets();
+        renderPetDetails(petObj);
+        renderPets();
+        
+        // Show animation with the emoji
+        showActionAnimation(emoji);
+        
+        // Add speech bubble animation
+        showSpeechBubble(petObj, message);
+      }
+    }
+    
+    // Show speech bubble animation
+    function showSpeechBubble(pet, message) {
+      const container = document.querySelector(`[data-pet-id="${pet.id}"]`);
+      if (!container) return;
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'absolute top-0 right-0 transform -translate-y-full bg-white dark:bg-gray-800 p-2 rounded-xl border border-gray-200 dark:border-gray-600';
+      bubble.style.minWidth = '80px';
+      bubble.style.maxWidth = '150px';
+      bubble.style.zIndex = 10;
+      
+      // Add speech bubble tail
+      bubble.style.position = 'relative';
+      bubble.innerHTML = `
+        <div class="text-sm font-medium text-center">${message}</div>
+        <div class="absolute bottom-0 right-3 transform translate-y-1/2 rotate-45 w-3 h-3 bg-white dark:bg-gray-800 border-r border-b border-gray-200 dark:border-gray-600"></div>
+      `;
+      
+      container.appendChild(bubble);
+      
+      // Add appear animation
+      bubble.animate([
+        { opacity: 0, transform: 'translateY(-10px)' },
+        { opacity: 1, transform: 'translateY(0)' }
+      ], {
+        duration: 300,
+        easing: 'ease-out'
+      });
+      
+      // Remove after some time
+      setTimeout(() => {
+        // Add disappear animation
+        const anim = bubble.animate([
+          { opacity: 1, transform: 'translateY(0)' },
+          { opacity: 0, transform: 'translateY(-10px)' }
+        ], {
+          duration: 300,
+          easing: 'ease-in'
+        });
+        
+        anim.onfinish = () => bubble.remove();
+      }, 3000);
+    }
+    
+    // Save pets to memory only (data will be lost on refresh due to iframe sandbox limitations)
+    function savePets() {
+      // In sandbox environment, we can't use localStorage
+      // This function now only ensures pets are saved in memory during the current session
+      console.log('Pets saved in memory (data will be lost on page refresh)');
+    }
+    
+    // Show delete confirmation modal
+    function showDeleteConfirmation() {
+      if (!selectedPet) return;
+      document.getElementById('deleteModal').classList.remove('hidden');
+    }
+    
+    // Hide delete confirmation modal
+    function hideDeleteConfirmation() {
+      document.getElementById('deleteModal').classList.add('hidden');
+    }
+    
+    // Delete the selected pet
+    function deleteSelectedPet() {
+      if (!selectedPet) return;
+      
+      // If the pet is married, update its partner
+      if (selectedPet.marriedTo) {
+        const partner = pets.find(p => p.id === selectedPet.marriedTo);
+        if (partner) {
+          partner.marriedTo = null;
+        }
+      }
+      
+      // Remove the pet from array
+      pets = pets.filter(p => p.id !== selectedPet.id);
+      
+      // Save changes
+      savePets();
+      
+      // Update UI
+      hideDeleteConfirmation();
+      document.getElementById('selectedPetInfo').classList.add('hidden');
+      document.getElementById('noSelection').classList.remove('hidden');
+      selectedPet = null;
+      
+      // Re-render pets
+      renderPets();
+    }
+    
+    // Start the game
+    initGame();
+  </script>
+</body>
+</html>
