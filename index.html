@@ -298,9 +298,12 @@
 <body class="font-sans bg-oneui-light-bg dark:bg-oneui-dark-bg text-oneui-light-text dark:text-oneui-dark-text transition-colors duration-300">
   <div class="min-h-screen p-4 md:p-8">
     <!-- Header -->
-    <header class="flex justify-between items-center mb-6">
-      <h1 id="gameTitle" class="text-3xl font-bold text-primary">EmojiPet</h1>
+    <header class="flex flex-col sm:flex-row justify-between items-center mb-6">
+      <h1 id="gameTitle" class="text-3xl font-bold text-primary mb-2 sm:mb-0">EmojiPet</h1>
       <div class="flex space-x-2">
+        <button id="achievementsButton" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
+          <span class="text-xl">🏆</span>
+        </button>
         <button id="rgbModeToggle" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
@@ -346,10 +349,58 @@
             </div>
           </div>
           
+          <!-- Niveaux et besoins -->
           <div class="mb-4">
-            <p class="text-sm mb-1">Niveau d'évolution</p>
-            <div class="emoji-evolution-progress">
+            <div class="flex justify-between items-center">
+              <p class="text-sm mb-1">Niveau d'évolution</p>
+              <p id="petLevel" class="text-sm font-bold text-primary">Niveau 1</p>
+            </div>
+            <div class="emoji-evolution-progress mb-1">
               <div id="evolutionBar" class="emoji-evolution-bar" style="width: 10%;"></div>
+            </div>
+            <p id="evolutionXP" class="text-xs text-gray-500 dark:text-gray-400">XP: 0/100</p>
+          </div>
+          
+          <!-- Besoins -->
+          <div class="grid grid-cols-2 gap-2 mb-4">
+            <div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm">🍔 Faim</span>
+                <span id="hungerValue" class="text-xs">100%</span>
+              </div>
+              <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div id="hungerBar" class="h-full bg-green-500 rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm">😊 Bonheur</span>
+                <span id="happinessValue" class="text-xs">100%</span>
+              </div>
+              <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div id="happinessBar" class="h-full bg-pink-500 rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm">🚿 Propreté</span>
+                <span id="cleanlinessValue" class="text-xs">100%</span>
+              </div>
+              <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div id="cleanlinessBar" class="h-full bg-blue-500 rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm">⚡ Énergie</span>
+                <span id="energyValue" class="text-xs">100%</span>
+              </div>
+              <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div id="energyBar" class="h-full bg-yellow-500 rounded-full" style="width: 100%"></div>
+              </div>
             </div>
           </div>
           
@@ -363,8 +414,14 @@
             <button id="cleanPet" class="oneui-button w-full py-2 px-4 bg-yellow-500 hover:bg-yellow-600 text-white font-medium emoji-action">
               🛁 Nettoyer
             </button>
+            <button id="sleepPet" class="oneui-button w-full py-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white font-medium emoji-action">
+              😴 Faire dormir
+            </button>
             <button id="complimentPet" class="oneui-button w-full py-2 px-4 bg-purple-500 hover:bg-purple-600 text-white font-medium emoji-action">
               💌 Lui parler
+            </button>
+            <button id="shopButton" class="oneui-button w-full py-2 px-4 bg-amber-500 hover:bg-amber-600 text-white font-medium emoji-action">
+              🛒 Boutique <span id="coinDisplay" class="ml-1 bg-yellow-300 text-amber-800 px-1 rounded-full text-xs">100</span>
             </button>
             <button id="marryPet" class="oneui-button w-full py-2 px-4 bg-pink-500 hover:bg-pink-600 text-white font-medium emoji-action">
               💍 Marier
@@ -756,6 +813,33 @@
     </div>
   </div>
   
+  <!-- Achievements Modal -->
+  <div id="achievementsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
+    <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+      <h2 class="text-2xl font-semibold mb-4 flex items-center">
+        <span class="mr-2">🏆</span>
+        Défis et Succès
+      </h2>
+      
+      <div id="achievementsList" class="space-y-4 mb-6">
+        <!-- Achievements will be listed here -->
+      </div>
+      
+      <button id="closeAchievements" class="oneui-button w-full py-3 px-4 bg-primary hover:bg-secondary text-white font-medium">
+        Fermer
+      </button>
+    </div>
+  </div>
+  
+  <!-- Achievement Notification -->
+  <div id="achievementNotification" class="fixed top-4 right-4 z-50 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-500 ease-out flex items-center">
+    <div class="text-3xl mr-3 achievement-icon"></div>
+    <div>
+      <h3 class="font-bold text-lg achievement-title"></h3>
+      <p class="text-sm text-gray-600 dark:text-gray-400 achievement-desc"></p>
+    </div>
+  </div>
+
   <script>
     // Dark mode detection & toggle
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -789,49 +873,286 @@
     let selectedEmoji = null;
     let selectedAccessory = null;
     let selectedReligion = null;
+    let achievements = [];
+    let playerLevel = 1;
+    let playerXP = 0;
+    let gameCoins = 100; // Monnaie du jeu
     
     // Emojis and emotions
     const petEmotions = ['😃', '😊', '😢', '😍', '😴', '🤒', '😋'];
+    
+    // Achievements data
+    const availableAchievements = [
+      {
+        id: 'feeder',
+        name: 'Nourrisseur Attentionné',
+        description: 'Nourrir vos EmojiPets 5 fois',
+        icon: '🍔',
+        requirement: 5,
+        progress: 0,
+        completed: false,
+        xpReward: 50
+      },
+      {
+        id: 'player',
+        name: 'Maître du Jeu',
+        description: 'Jouer avec vos EmojiPets 5 fois',
+        icon: '🎾',
+        requirement: 5,
+        progress: 0,
+        completed: false,
+        xpReward: 50
+      },
+      {
+        id: 'cleaner',
+        name: 'Hygiéniste',
+        description: 'Nettoyer vos EmojiPets 5 fois',
+        icon: '🛁',
+        requirement: 5,
+        progress: 0,
+        completed: false,
+        xpReward: 50
+      },
+      {
+        id: 'lover',
+        name: 'Ami Fidèle',
+        description: 'Dire "Je t\'aime" à vos EmojiPets 3 fois',
+        icon: '❤️',
+        requirement: 3,
+        progress: 0,
+        completed: false,
+        xpReward: 40
+      },
+      {
+        id: 'collector',
+        name: 'Collectionneur',
+        description: 'Avoir 3 EmojiPets différents',
+        icon: '🏆',
+        requirement: 3,
+        progress: 0,
+        completed: false,
+        xpReward: 60
+      },
+      {
+        id: 'evolver',
+        name: 'Évolution Complète',
+        description: 'Faire évoluer un EmojiPet jusqu\'au stade final',
+        icon: '⭐',
+        requirement: 1,
+        progress: 0,
+        completed: false,
+        xpReward: 100
+      },
+      {
+        id: 'matchmaker',
+        name: 'Entremetteur',
+        description: 'Marier 2 couples d\'EmojiPets',
+        icon: '💍',
+        requirement: 2,
+        progress: 0,
+        completed: false,
+        xpReward: 80
+      },
+      {
+        id: 'speaker',
+        name: 'Beau Parleur',
+        description: 'Parler à vos EmojiPets 10 fois',
+        icon: '💬',
+        requirement: 10,
+        progress: 0,
+        completed: false,
+        xpReward: 70
+      }
+    ];
+    // Objets disponibles dans la boutique
+    const shopItems = [
+      {
+        id: 'crown',
+        name: 'Couronne Royale',
+        emoji: '👑',
+        description: 'Une couronne royale pour votre EmojiPet',
+        price: 50,
+        type: 'accessory'
+      },
+      {
+        id: 'glasses',
+        name: 'Lunettes de Soleil',
+        emoji: '🕶️',
+        description: 'Des lunettes stylées pour votre EmojiPet',
+        price: 30,
+        type: 'accessory'
+      },
+      {
+        id: 'bowtie',
+        name: 'Nœud Papillon',
+        emoji: '🎀',
+        description: 'Un nœud papillon élégant',
+        price: 25,
+        type: 'accessory'
+      },
+      {
+        id: 'xppotion',
+        name: 'Potion d\'XP',
+        emoji: '🧪',
+        description: 'Donne +50 XP à votre EmojiPet',
+        price: 100,
+        type: 'potion',
+        effect: (pet) => {
+          pet.xp += 50;
+          return '+50 XP';
+        }
+      },
+      {
+        id: 'energypotion',
+        name: 'Potion d\'Énergie',
+        emoji: '⚡',
+        description: 'Remplit l\'énergie de votre EmojiPet à 100%',
+        price: 60,
+        type: 'potion',
+        effect: (pet) => {
+          pet.energy = 100;
+          return 'Énergie restaurée !';
+        }
+      },
+      {
+        id: 'happypotion',
+        name: 'Potion de Bonheur',
+        emoji: '😊',
+        description: 'Remplit le bonheur de votre EmojiPet à 100%',
+        price: 70,
+        type: 'potion',
+        effect: (pet) => {
+          pet.happiness = 100;
+          return 'Bonheur restauré !';
+        }
+      }
+    ];
+
+    // Système d'évolution avancé avec formes légendaires
     const petEvolutions = {
-      '🐶': ['🐕', '🐕‍🦺'],
-      '🐱': ['🐈', '🐈‍⬛'],
-      '🐰': ['🐇', '🐇'],
-      '🐼': ['🐼', '🐼'],
-      '🦊': ['🦊', '🦊'],
-      '🦁': ['🦁', '🦁'],
-      '🐮': ['🐄', '🐄'],
-      '🐷': ['🐖', '🐖'],
-      '🐵': ['🐒', '🦍'],
-      '🐻': ['🐻', '🐻‍❄️'],
-      '🐨': ['🐨', '🐨'],
-      '🦝': ['🦝', '🦝'],
-      '🐲': ['🐉', '🐉'],
-      '🦄': ['🦄', '🦄'],
-      '🦒': ['🦒', '🦒'],
-      '🦓': ['🦓', '🦓'],
-      '🐘': ['🐘', '🐘'],
-      '🦔': ['🦔', '🦔'],
-      '🐢': ['🐢', '🐢'],
-      '🐬': ['🐬', '🐬'],
-      '🦅': ['🦅', '🦅'],   // Phénix (avec animation de feu spéciale)
-      '🦈': ['🦈', '🦈'],   // Requin
-      '🦖': ['🦖', '🦕'],   // T-Rex évolue en Brachiosaurus
+      // Animaux normaux - [Niveau 1, Niveau 2, Légendaire (rare)]
+      '🐶': ['🐕', '🐕‍🦺', '🦊'],      // Chien -> Renard légendaire
+      '🐱': ['🐈', '🐈‍⬛', '🦁'],       // Chat -> Lion légendaire
+      '🐰': ['🐇', '🦝', '🐲'],         // Lapin -> Raton -> Dragon légendaire
+      '🐼': ['🐼', '🐻', '🐻‍❄️'],      // Panda -> Ours -> Ours polaire légendaire
+      '🦊': ['🦊', '🦝', '🦄'],         // Renard -> Licorne légendaire
+      '🦁': ['🦁', '🐯', '🐉'],         // Lion -> Tigre -> Dragon légendaire
+      '🐮': ['🐄', '🦬', '🦣'],         // Vache -> Bison -> Mammouth légendaire
+      '🐷': ['🐖', '🐗', '🦏'],         // Cochon -> Sanglier -> Rhinocéros légendaire
+      '🐵': ['🐒', '🦍', '🦧'],         // Singe -> Gorille -> Orang-outan légendaire
+      '🐻': ['🐻‍❄️', '🐨', '🐼'],      // Ours -> Koala -> Panda légendaire
+      '🐨': ['🐨', '🦥', '🦍'],         // Koala -> Paresseux -> Gorille légendaire
+      '🦝': ['🦝', '🦊', '🦁'],         // Raton laveur -> Renard -> Lion légendaire
+      '🐲': ['🐉', '🦕', '🦖'],         // Dragon -> Dino -> T-Rex légendaire
+      '🦄': ['🦄', '🦓', '🐲'],         // Licorne -> Zèbre -> Dragon légendaire
+      '🦒': ['🦒', '🐘', '🦕'],         // Girafe -> Éléphant -> Diplodocus légendaire
+      '🦓': ['🦓', '🦓', '🦄'],         // Zèbre -> Licorne légendaire
+      '🐘': ['🐘', '🦣', '🦕'],         // Éléphant -> Mammouth -> Diplodocus légendaire
+      '🦔': ['🦔', '🦡', '🦊'],         // Hérisson -> Blaireau -> Renard légendaire
+      '🐢': ['🐢', '🐊', '🐉'],         // Tortue -> Crocodile -> Dragon légendaire
+      '🐬': ['🐬', '🐋', '🦈'],         // Dauphin -> Baleine -> Requin légendaire
+      '🦅': ['🦅', '🦅', '🔥'],         // Phénix -> Phénix -> Feu légendaire
+      '🦈': ['🦈', '🐋', '🌊'],         // Requin -> Baleine -> Eau légendaire
+      '🦖': ['🦖', '🦕', '🐲'],         // T-Rex -> Diplodocus -> Dragon légendaire
       
       // Personnages humains
-      '🙎‍♀️': ['🙎‍♀️', '🙎‍♀️'],
-      '🙎': ['🙎', '🙎'],
-      '🙎‍♂️': ['🙎‍♂️', '🙎‍♂️'],
-      '🧑‍🦽': ['🧑‍🦽', '🧑‍🦽'],
-      '👨‍🦽': ['👨‍🦽', '👨‍🦽'],
-      '👩‍🦼': ['👩‍🦼', '👩‍🦼'],
-      '🧑‍🦼': ['🧑‍🦼', '🧑‍🦼'],
-      '👨‍🦯': ['👨‍🦯', '👨‍🦯'],
-      '🧎‍♀️': ['🧎‍♀️', '🧎‍♀️'],
-      '👩‍❤️‍👨': ['👩‍❤️‍👨', '👩‍❤️‍💋‍👨'],
-      '👩‍❤️‍👩': ['👩‍❤️‍👩', '👩‍❤️‍💋‍👩'],
-      '👩‍❤️‍💋‍👨': ['👩‍❤️‍💋‍👨', '👪']
+      '🙎‍♀️': ['🙎‍♀️', '👸', '👸'],     // Femme -> Princesse
+      '🙎': ['🙎', '🧙', '🧙'],          // Personne -> Magicien
+      '🙎‍♂️': ['🙎‍♂️', '🤴', '🤴'],     // Homme -> Prince
+      '🧑‍🦽': ['🧑‍🦽', '🧑‍🦽', '🦸'],  // Personne en fauteuil -> Super héros
+      '👨‍🦽': ['👨‍🦽', '👨‍🦽', '🦸‍♂️'], // Homme en fauteuil -> Super héros
+      '👩‍🦼': ['👩‍🦼', '👩‍🦼', '🦸‍♀️'], // Femme en fauteuil électrique -> Super héroïne
+      '🧑‍🦼': ['🧑‍🦼', '🧑‍🦼', '🦸'],   // Personne en fauteuil électrique -> Super héros
+      '👨‍🦯': ['👨‍🦯', '👨‍🦯', '🧙‍♂️'], // Homme avec canne -> Sorcier
+      '🧎‍♀️': ['🧎‍♀️', '💃', '🧚‍♀️'],   // Femme à genoux -> Danseuse -> Fée
+      '👩‍❤️‍👨': ['👩‍❤️‍👨', '👩‍❤️‍💋‍👨', '👪'], // Couple -> Famille
+      '👩‍❤️‍👩': ['👩‍❤️‍👩', '👩‍❤️‍💋‍👩', '👩‍👩‍👧'], // Couple -> Famille
+      '👩‍❤️‍💋‍👨': ['👩‍❤️‍💋‍👨', '👪', '👨‍👩‍👧‍👦'] // Couple -> Famille
     };
     
+    // Update and track achievement progress
+    function updateAchievement(achievementId, progress) {
+      const achievement = achievements.find(a => a.id === achievementId);
+      if (!achievement || achievement.completed) return;
+      
+      achievement.progress += progress;
+      
+      // Check if achievement is completed
+      if (achievement.progress >= achievement.requirement && !achievement.completed) {
+        achievement.completed = true;
+        
+        // Grant XP reward to player
+        playerXP += achievement.xpReward;
+        
+        // Show notification
+        showAchievementNotification(achievement);
+      }
+    }
+    
+    // Show achievement notification
+    function showAchievementNotification(achievement) {
+      const notification = document.getElementById('achievementNotification');
+      const icon = notification.querySelector('.achievement-icon');
+      const title = notification.querySelector('.achievement-title');
+      const desc = notification.querySelector('.achievement-desc');
+      
+      icon.textContent = achievement.icon;
+      title.textContent = achievement.name + ' 🏆';
+      desc.textContent = achievement.description;
+      
+      // Show notification
+      notification.style.transform = 'translateX(0)';
+      
+      // Hide notification after 5 seconds
+      setTimeout(() => {
+        notification.style.transform = 'translateX(calc(100% + 1rem))';
+      }, 5000);
+    }
+    
+    // Render achievements list
+    function renderAchievements() {
+      const container = document.getElementById('achievementsList');
+      container.innerHTML = '';
+      
+      achievements.forEach(achievement => {
+        const achievementEl = document.createElement('div');
+        achievementEl.className = `p-4 ${achievement.completed ? 'bg-purple-50 dark:bg-purple-900/30' : 'bg-white dark:bg-gray-800'} rounded-xl border ${achievement.completed ? 'border-primary' : 'border-gray-200 dark:border-gray-700'}`;
+        
+        const progress = Math.min(achievement.progress, achievement.requirement);
+        const percentage = Math.floor((progress / achievement.requirement) * 100);
+        
+        achievementEl.innerHTML = `
+          <div class="flex items-center mb-2">
+            <div class="text-3xl mr-3">${achievement.icon}</div>
+            <div>
+              <h3 class="font-bold text-lg">${achievement.name} ${achievement.completed ? '🏆' : ''}</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">${achievement.description}</p>
+            </div>
+          </div>
+          <div class="mt-2">
+            <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full ${achievement.completed ? 'bg-primary' : 'bg-gray-400 dark:bg-gray-500'} rounded-full" style="width: ${percentage}%"></div>
+            </div>
+            <p class="text-xs text-right mt-1 ${achievement.completed ? 'text-primary' : 'text-gray-500'}">${progress}/${achievement.requirement}</p>
+          </div>
+          ${achievement.completed ? `<p class="text-sm text-primary mt-2">+${achievement.xpReward} XP</p>` : ''}
+        `;
+        
+        container.appendChild(achievementEl);
+      });
+    }
+    
+    // Show achievements modal
+    function showAchievementsModal() {
+      renderAchievements();
+      document.getElementById('achievementsModal').classList.remove('hidden');
+    }
+    
+    // Hide achievements modal
+    function hideAchievementsModal() {
+      document.getElementById('achievementsModal').classList.add('hidden');
+    }
+      
     // Initialize game
     function initGame() {
       // Create some sample pets to start with
@@ -864,6 +1185,15 @@
       document.getElementById('feedPet').addEventListener('click', feedSelectedPet);
       document.getElementById('playWithPet').addEventListener('click', playWithSelectedPet);
       document.getElementById('cleanPet').addEventListener('click', cleanSelectedPet);
+      
+      // Initialize achievements
+      if (achievements.length === 0) {
+        achievements = JSON.parse(JSON.stringify(availableAchievements));
+      }
+      
+      // Setup achievements modal
+      document.getElementById('achievementsButton').addEventListener('click', showAchievementsModal);
+      document.getElementById('closeAchievements').addEventListener('click', hideAchievementsModal);
       document.getElementById('complimentPet').addEventListener('click', showComplimentModal);
       document.getElementById('marryPet').addEventListener('click', showMarriageModal);
       document.getElementById('cancelMarriage').addEventListener('click', hideMarriageModal);
@@ -904,12 +1234,19 @@
       const now = Date.now();
       
       pets.forEach(pet => {
-        // Decrease happiness and hunger over time
+        // Initialize energy if not exists
+        if (pet.energy === undefined) {
+          pet.energy = 100;
+        }
+        
+        // Decrease stats over time
         pet.happiness = Math.max(0, pet.happiness - 2);
         pet.hunger = Math.max(0, pet.hunger - 3);
+        pet.cleanliness = Math.max(0, pet.cleanliness - 1);
+        pet.energy = Math.max(0, pet.energy - 2);
         
         // Evolve pet if conditions are met
-        if (pet.xp >= pet.evolutionThreshold && pet.evolutionStage < 2) {
+        if (pet.xp >= pet.evolutionThreshold && pet.evolutionStage < 3) {
           evolvePet(pet);
         }
         
@@ -926,10 +1263,62 @@
         if (updatedPet) {
           selectedPet = updatedPet;
           renderPetDetails(selectedPet);
+          updateNeedsUI(selectedPet);
         }
       }
       
       renderPets();
+    }
+    
+    // Update needs UI
+    function updateNeedsUI(pet) {
+      // Update hunger bar
+      document.getElementById('hungerBar').style.width = `${pet.hunger}%`;
+      document.getElementById('hungerValue').textContent = `${pet.hunger}%`;
+      
+      // Update happiness bar
+      document.getElementById('happinessBar').style.width = `${pet.happiness}%`;
+      document.getElementById('happinessValue').textContent = `${pet.happiness}%`;
+      
+      // Update cleanliness bar
+      document.getElementById('cleanlinessBar').style.width = `${pet.cleanliness}%`;
+      document.getElementById('cleanlinessValue').textContent = `${pet.cleanliness}%`;
+      
+      // Update energy bar
+      document.getElementById('energyBar').style.width = `${pet.energy || 0}%`;
+      document.getElementById('energyValue').textContent = `${pet.energy || 0}%`;
+      
+      // Update colors based on values
+      updateBarColor('hungerBar', pet.hunger);
+      updateBarColor('happinessBar', pet.happiness);
+      updateBarColor('cleanlinessBar', pet.cleanliness);
+      updateBarColor('energyBar', pet.energy || 0);
+    }
+    
+    // Update bar color based on percentage
+    function updateBarColor(barId, value) {
+      const bar = document.getElementById(barId);
+      if (!bar) return;
+      
+      if (value < 30) {
+        // Critical level - red
+        if (barId === 'hungerBar') bar.className = 'h-full bg-red-500 rounded-full';
+        else if (barId === 'happinessBar') bar.className = 'h-full bg-red-500 rounded-full';
+        else if (barId === 'cleanlinessBar') bar.className = 'h-full bg-red-500 rounded-full';
+        else if (barId === 'energyBar') bar.className = 'h-full bg-red-500 rounded-full';
+      } else if (value < 60) {
+        // Warning level - yellow/orange
+        if (barId === 'hungerBar') bar.className = 'h-full bg-yellow-500 rounded-full';
+        else if (barId === 'happinessBar') bar.className = 'h-full bg-orange-500 rounded-full';
+        else if (barId === 'cleanlinessBar') bar.className = 'h-full bg-yellow-500 rounded-full';
+        else if (barId === 'energyBar') bar.className = 'h-full bg-yellow-500 rounded-full';
+      } else {
+        // Good level - original colors
+        if (barId === 'hungerBar') bar.className = 'h-full bg-green-500 rounded-full';
+        else if (barId === 'happinessBar') bar.className = 'h-full bg-pink-500 rounded-full';
+        else if (barId === 'cleanlinessBar') bar.className = 'h-full bg-blue-500 rounded-full';
+        else if (barId === 'energyBar') bar.className = 'h-full bg-amber-500 rounded-full';
+      }
     }
     
     // Render all pets in the container
@@ -1039,9 +1428,14 @@
       document.getElementById('selectedCountry').textContent = `Origine: ${getCountryName(pet.country)}`;
       document.getElementById('selectedMood').textContent = `Humeur: ${getPetMoodText(pet)}`;
       
+      // Show level information
+      const petLevel = Math.floor(pet.xp / 50) + 1; // Every 50 XP is a new level
+      document.getElementById('petLevel').textContent = `Niveau ${petLevel}`;
+      
       // Update evolution progress bar
       const evolutionPercentage = (pet.xp / pet.evolutionThreshold) * 100;
       document.getElementById('evolutionBar').style.width = `${Math.min(100, evolutionPercentage)}%`;
+      document.getElementById('evolutionXP').textContent = `XP: ${pet.xp}/${pet.evolutionThreshold}`;
       
       // Add 3D effect to the selected emoji
       document.getElementById('selectedEmoji').classList.add('emoji-3d');
@@ -1123,6 +1517,11 @@
         lastInteraction: Date.now()
       };
       
+      // Update collector achievement when creating a new pet
+      if (pets.length >= 2) { // Will be 3 after adding this one
+        updateAchievement('collector', 1);
+      }
+      
       pets.push(newPet);
       savePets();
       renderPets();
@@ -1159,6 +1558,9 @@
         renderPetDetails(pet);
         renderPets();
         
+        // Update achievement progress
+        updateAchievement('feeder', 1);
+        
         // Animation
         showActionAnimation('🍔');
       }
@@ -1180,6 +1582,9 @@
         renderPetDetails(pet);
         renderPets();
         
+        // Update achievement progress
+        updateAchievement('player', 1);
+        
         // Animation
         showActionAnimation('🎾');
       }
@@ -1200,6 +1605,9 @@
         savePets();
         renderPetDetails(pet);
         renderPets();
+        
+        // Update achievement progress
+        updateAchievement('cleaner', 1);
         
         // Animation
         showActionAnimation('✨');
@@ -1264,6 +1672,9 @@
       pet1.xp += 20;
       pet2.xp += 20;
       
+      // Update matchmaker achievement
+      updateAchievement('matchmaker', 1);
+      
       savePets();
       renderPets();
       renderPetDetails(pet1);
@@ -1291,24 +1702,54 @@
     
     // Evolve a pet
     function evolvePet(pet) {
-      if (pet.evolutionStage >= 2) return;
+      if (pet.evolutionStage >= 3) return;
       
       // Evolve to next stage
       pet.evolutionStage++;
       
       // Update emoji to evolved form
       if (petEvolutions[pet.emoji]) {
-        pet.emoji = petEvolutions[pet.emoji][pet.evolutionStage - 1];
+        // Chance for legendary evolution at the final stage
+        if (pet.evolutionStage === 3) {
+          // 10% chance for legendary form
+          const isLegendary = Math.random() < 0.10;
+          if (isLegendary && petEvolutions[pet.emoji][2]) {
+            pet.emoji = petEvolutions[pet.emoji][2];
+            pet.isLegendary = true;
+            
+            // Show special notification for legendary
+            showLegendaryEvolutionNotification(pet);
+          } else {
+            // Non-legendary final form
+            pet.emoji = petEvolutions[pet.emoji][1];
+          }
+        } else {
+          pet.emoji = petEvolutions[pet.emoji][pet.evolutionStage - 1];
+        }
       }
       
       // Increase evolution threshold for next evolution
-      pet.evolutionThreshold = pet.evolutionStage === 1 ? 200 : 300;
+      if (pet.evolutionStage === 1) {
+        pet.evolutionThreshold = 200;
+      } else if (pet.evolutionStage === 2) {
+        pet.evolutionThreshold = 300;
+      } else {
+        pet.evolutionThreshold = 500;
+      }
+      
+      // Grant additional XP for reaching a new evolution stage
+      pet.xp += 20;
+      
+      // Check if achievement should be awarded (final evolution)
+      if (pet.evolutionStage === 2) {
+        updateAchievement('evolver', 1);
+      }
       
       savePets();
       
       // Show evolution animation
       if (selectedPet && selectedPet.id === pet.id) {
-        showActionAnimation('⭐');
+        showActionAnimation(pet.isLegendary ? '🌟' : '⭐');
       }
       
       // Find the pet element
@@ -1319,6 +1760,26 @@
           setTimeout(() => petEl.classList.remove('animate-pulse-slow'), 3000);
         }
       }, 100);
+    }
+    
+    // Show legendary evolution notification
+    function showLegendaryEvolutionNotification(pet) {
+      const notification = document.getElementById('achievementNotification');
+      const icon = notification.querySelector('.achievement-icon');
+      const title = notification.querySelector('.achievement-title');
+      const desc = notification.querySelector('.achievement-desc');
+      
+      icon.textContent = '🌟';
+      title.textContent = 'ÉVOLUTION LÉGENDAIRE!';
+      desc.textContent = `${pet.name} a atteint sa forme légendaire!`;
+      
+      // Show notification
+      notification.style.transform = 'translateX(0)';
+      
+      // Hide notification after 7 seconds (longer for legendary)
+      setTimeout(() => {
+        notification.style.transform = 'translateX(calc(100% + 1rem))';
+      }, 7000);
     }
     
     // Show action animation
@@ -1613,6 +2074,8 @@
         // Special bonuses
         if (message === 'Je t\'aime' || message === 'Je t\'adore') {
           happinessBoost = 25;
+          // Update achievement progress for love messages
+          updateAchievement('lover', 1);
         } else if (message === 'Tu es le meilleur' || message === 'Tu es magnifique') {
           happinessBoost = 20;
         }
@@ -1620,6 +2083,9 @@
         petObj.happiness = Math.min(100, petObj.happiness + happinessBoost);
         petObj.xp += 8;
         petObj.lastInteraction = Date.now();
+        
+        // Update general speaking achievement
+        updateAchievement('speaker', 1);
         
         updatePetMood(petObj);
         savePets();
@@ -1723,6 +2189,220 @@
       // Re-render pets
       renderPets();
     }
+    
+    // Make pet sleep to restore energy
+    function sleepPet() {
+      if (!selectedPet) return;
+      
+      const pet = pets.find(p => p.id === selectedPet.id);
+      if (pet) {
+        pet.energy = 100;
+        pet.xp += 5;
+        pet.lastInteraction = Date.now();
+        
+        updatePetMood(pet);
+        savePets();
+        renderPetDetails(pet);
+        updateNeedsUI(pet);
+        renderPets();
+        
+        // Animation
+        showActionAnimation('😴');
+        
+        // Show sleeping animation on the pet
+        const petEl = document.querySelector(`[data-pet-id="${pet.id}"]`);
+        if (petEl) {
+          const emojiEl = petEl.querySelector('.emoji-display');
+          
+          // Add Z's animation
+          const zs = document.createElement('div');
+          zs.className = 'absolute -top-4 right-0 text-xl';
+          zs.innerHTML = '💤';
+          zs.style.animation = 'float 2s ease-in-out infinite';
+          petEl.appendChild(zs);
+          
+          // Remove after a few seconds
+          setTimeout(() => {
+            zs.remove();
+          }, 4000);
+        }
+      }
+    }
+    
+    // Shop modal
+    function showShopModal() {
+      // Create modal if it doesn't exist
+      if (!document.getElementById('shopModal')) {
+        const shopModal = document.createElement('div');
+        shopModal.id = 'shopModal';
+        shopModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden';
+        
+        shopModal.innerHTML = `
+          <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-2xl font-semibold flex items-center">
+                <span class="mr-2">🛒</span>
+                Boutique
+              </h2>
+              <div class="bg-amber-100 dark:bg-amber-900 px-3 py-1 rounded-full text-amber-800 dark:text-amber-100 font-medium">
+                <span id="shopCoins">${gameCoins}</span> 🪙
+              </div>
+            </div>
+            
+            <div id="shopItemsList" class="space-y-4 mb-6">
+              <!-- Shop items will be listed here -->
+            </div>
+            
+            <button id="closeShop" class="oneui-button w-full py-3 px-4 bg-primary hover:bg-secondary text-white font-medium">
+              Fermer
+            </button>
+          </div>
+        `;
+        
+        document.body.appendChild(shopModal);
+        
+        // Add event listener to close button
+        document.getElementById('closeShop').addEventListener('click', hideShopModal);
+      }
+      
+      // Update coins display
+      document.getElementById('shopCoins').textContent = gameCoins;
+      document.getElementById('coinDisplay').textContent = gameCoins;
+      
+      // Render shop items
+      renderShopItems();
+      
+      // Show the modal
+      document.getElementById('shopModal').classList.remove('hidden');
+    }
+    
+    // Hide shop modal
+    function hideShopModal() {
+      document.getElementById('shopModal').classList.add('hidden');
+    }
+    
+    // Render shop items
+    function renderShopItems() {
+      const container = document.getElementById('shopItemsList');
+      container.innerHTML = '';
+      
+      shopItems.forEach(item => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center justify-between';
+        
+        itemEl.innerHTML = `
+          <div class="flex items-center">
+            <div class="text-3xl mr-3">${item.emoji}</div>
+            <div>
+              <h3 class="font-bold">${item.name}</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">${item.description}</p>
+            </div>
+          </div>
+          <button class="buy-item-btn px-3 py-1 ${gameCoins >= item.price ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'} text-white rounded-lg flex items-center" data-item-id="${item.id}" ${gameCoins < item.price ? 'disabled' : ''}>
+            <span>${item.price}</span>
+            <span class="ml-1">🪙</span>
+          </button>
+        `;
+        
+        container.appendChild(itemEl);
+      });
+      
+      // Add event listeners to buy buttons
+      document.querySelectorAll('.buy-item-btn').forEach(btn => {
+        if (!btn.disabled) {
+          btn.addEventListener('click', function() {
+            const itemId = this.dataset.itemId;
+            buyItem(itemId);
+          });
+        }
+      });
+    }
+    
+    // Buy an item from the shop
+    function buyItem(itemId) {
+      if (!selectedPet) {
+        alert('Veuillez d\'abord sélectionner un EmojiPet');
+        return;
+      }
+      
+      const item = shopItems.find(i => i.id === itemId);
+      if (!item) return;
+      
+      // Check if player has enough coins
+      if (gameCoins < item.price) {
+        return;
+      }
+      
+      // Deduct coins
+      gameCoins -= item.price;
+      
+      // Update coins display
+      document.getElementById('shopCoins').textContent = gameCoins;
+      document.getElementById('coinDisplay').textContent = gameCoins;
+      
+      // Find pet
+      const pet = pets.find(p => p.id === selectedPet.id);
+      if (!pet) return;
+      
+      // Apply item effect
+      if (item.type === 'accessory') {
+        // Add accessory to pet
+        pet.accessory = item.emoji;
+        
+        // Show success message
+        showToast(`${item.emoji} ${item.name} équipé à ${pet.name}!`);
+      } else if (item.type === 'potion') {
+        // Apply potion effect
+        const result = item.effect(pet);
+        
+        // Show success message
+        showToast(`${item.emoji} ${result}`);
+      }
+      
+      // Update UI
+      savePets();
+      renderPets();
+      renderPetDetails(pet);
+      updateNeedsUI(pet);
+      
+      // Disable the buy button if player doesn't have enough coins
+      document.querySelectorAll('.buy-item-btn').forEach(btn => {
+        const btnItemId = btn.dataset.itemId;
+        const btnItem = shopItems.find(i => i.id === btnItemId);
+        
+        if (gameCoins < btnItem.price) {
+          btn.disabled = true;
+          btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+          btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+        }
+      });
+      
+      // Animation
+      showActionAnimation(item.emoji);
+    }
+    
+    // Show toast message
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white py-2 px-4 rounded-lg z-50';
+      toast.textContent = message;
+      
+      document.body.appendChild(toast);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        toast.classList.add('opacity-0');
+        toast.style.transition = 'opacity 0.5s ease';
+        
+        setTimeout(() => {
+          toast.remove();
+        }, 500);
+      }, 3000);
+    }
+    
+    // Add event listeners for new buttons
+    document.getElementById('sleepPet').addEventListener('click', sleepPet);
+    document.getElementById('shopButton').addEventListener('click', showShopModal);
     
     // Start the game
     initGame();
