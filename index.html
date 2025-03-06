@@ -9,22 +9,51 @@
     tailwind.config = {
       darkMode: 'class',
       theme: {
+        fontFamily: {
+          'sans': ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        },
         extend: {
           colors: {
-            primary: '#5D5CDE',
-            secondary: '#3e3e9e',
+            primary: '#00c2ff', /* Synthwave cyan */
+            secondary: '#b967ff', /* Synthwave purple */
+            success: '#00ff9d', /* Synthwave green */
+            warning: '#ff9d00', /* Synthwave orange */
+            danger: '#ff007a', /* Synthwave pink */
+            info: '#00e1ff', /* Synthwave cyan light */
+            synthwave: {
+              pink: '#ff007a',
+              purple: '#b967ff',
+              blue: '#00c2ff',
+              cyan: '#00e1ff',
+              green: '#00ff9d',
+              yellow: '#ffdd00',
+              orange: '#ff9d00',
+              red: '#ff2e4d'
+            },
+            gray: {
+              50: '#F2F2F7',
+              100: '#E5E5EA',
+              200: '#D1D1D6',
+              300: '#C7C7CC',
+              400: '#AEAEB2',
+              500: '#8E8E93',
+              600: '#636366',
+              700: '#48484A',
+              800: '#3A3A3C',
+              900: '#2C2C2E',
+            },
             oneui: {
               light: {
-                bg: '#ffffff',
-                card: '#f5f6f7',
+                bg: 'rgba(242, 242, 247, 0.7)', /* Translucent light background */
+                card: 'rgba(255, 255, 255, 0.7)', /* Translucent card background */
                 text: '#000000',
-                border: '#e1e2e3'
+                border: 'rgba(209, 209, 214, 0.7)' /* Translucent light border */
               },
               dark: {
-                bg: '#181818',
-                card: '#2d2d2d',
-                text: '#e1e2e3',
-                border: '#404040'
+                bg: 'rgba(28, 28, 30, 0.85)', /* Translucent dark background */
+                card: 'rgba(44, 44, 46, 0.8)', /* Translucent dark card */
+                text: '#FFFFFF',
+                border: 'rgba(56, 56, 58, 0.85)' /* Translucent dark border */
               }
             }
           },
@@ -34,6 +63,8 @@
             'pulse-slow': 'pulse 3s infinite',
             'wiggle': 'wiggle 1s ease-in-out',
             'float': 'float 3s ease-in-out infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+            'synthwave-pulse': 'synthwavePulse 4s ease-in-out infinite alternate',
           },
           keyframes: {
             wiggle: {
@@ -43,13 +74,128 @@
             float: {
               '0%, 100%': { transform: 'translateY(0)' },
               '50%': { transform: 'translateY(-10px)' },
-            }
+            },
+            glow: {
+              '0%': { textShadow: '0 0 4px rgba(0, 195, 255, 0.6), 0 0 8px rgba(0, 195, 255, 0.4)' },
+              '100%': { textShadow: '0 0 8px rgba(0, 195, 255, 0.8), 0 0 20px rgba(0, 195, 255, 0.6), 0 0 30px rgba(0, 195, 255, 0.4)' }
+            },
+            synthwavePulse: {
+              '0%': { boxShadow: '0 0 5px rgba(185, 103, 255, 0.7), 0 0 10px rgba(185, 103, 255, 0.5)' },
+              '50%': { boxShadow: '0 0 10px rgba(0, 195, 255, 0.7), 0 0 20px rgba(0, 195, 255, 0.5)' },
+              '100%': { boxShadow: '0 0 5px rgba(255, 0, 122, 0.7), 0 0 10px rgba(255, 0, 122, 0.5)' }
+            },
           }
         }
       }
     }
   </script>
   <style>
+    /* Synthwave + Mica styling */
+    .ios-card {
+      border-radius: 16px;
+      background-color: rgba(255, 255, 255, 0.15);
+      background-image: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0.35),
+        rgba(255, 255, 255, 0.1)
+      );
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.15),
+        0 0 1px rgba(185, 103, 255, 0.2),
+        0 0 15px rgba(0, 195, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .ios-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 25%;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0)
+      );
+      pointer-events: none;
+    }
+
+    .dark .ios-card {
+      background-color: rgba(44, 44, 46, 0.4);
+      background-image: linear-gradient(
+        to bottom right,
+        rgba(66, 66, 70, 0.4),
+        rgba(44, 44, 46, 0.2)
+      );
+      border: 1px solid rgba(83, 83, 99, 0.15);
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.25),
+        0 0 1px rgba(185, 103, 255, 0.3),
+        0 0 15px rgba(0, 195, 255, 0.2);
+    }
+    
+    .dark .ios-card::before {
+      background: linear-gradient(
+        to bottom,
+        rgba(100, 100, 120, 0.1),
+        rgba(44, 44, 46, 0)
+      );
+    }
+
+    .ios-button {
+      border-radius: 10px;
+      font-weight: 500;
+      transition: all 0.2s;
+      padding: 12px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .ios-button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0)
+      );
+      pointer-events: none;
+    }
+    
+    .ios-button:active {
+      transform: scale(0.97);
+    }
+
+    .synthwave-button {
+      box-shadow: 0 0 10px rgba(185, 103, 255, 0.7), 0 0 20px rgba(185, 103, 255, 0.5);
+      animation: synthwavePulse 4s ease-in-out infinite alternate;
+    }
+
+    .ios-input {
+      background-color: rgba(242, 242, 247, 0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 12px 16px;
+      font-size: 16px;
+    }
+
+    .dark .ios-input {
+      background-color: rgba(44, 44, 46, 0.5);
+      color: white;
+      border: 1px solid rgba(83, 83, 99, 0.3);
+    }
+
     /* Phoenix fire animation */
     @keyframes phoenix-fire {
       0% { text-shadow: 0 0 5px #ff0000, 0 0 10px #ff4000; }
@@ -81,6 +227,30 @@
         transform: perspective(800px) rotateY(15deg) rotateX(10deg) translateX(-5px); 
         text-shadow: 0 0 8px rgba(0, 120, 215, 0.6);
       }
+    }
+    
+    /* Synthwave text effect */
+    .synthwave-text {
+      color: #fff;
+      text-shadow:
+        0 0 5px #00c2ff,
+        0 0 10px #00c2ff,
+        0 0 20px #00c2ff,
+        0 0 40px #00c2ff;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    
+    /* Neon glow effects */
+    .neon-pink {
+      text-shadow: 0 0 5px #ff007a, 0 0 10px #ff007a, 0 0 15px #ff007a;
+    }
+    
+    .neon-blue {
+      text-shadow: 0 0 5px #00c2ff, 0 0 10px #00c2ff, 0 0 15px #00c2ff;
+    }
+    
+    .neon-purple {
+      text-shadow: 0 0 5px #b967ff, 0 0 10px #b967ff, 0 0 15px #b967ff;
     }
     
     .phoenix-emoji {
@@ -206,8 +376,8 @@
     }
     
     @keyframes pulsate {
-      0% { transform: scale(1); text-shadow: 0 0 5px rgba(93, 92, 222, 0.5); }
-      100% { transform: scale(1.1); text-shadow: 0 0 10px rgba(93, 92, 222, 0.8); }
+      0% { transform: scale(1); text-shadow: 0 0 5px rgba(0, 195, 255, 0.5); }
+      100% { transform: scale(1.1); text-shadow: 0 0 10px rgba(0, 195, 255, 0.8); }
     }
     
     @keyframes shine {
@@ -250,7 +420,7 @@
     .emoji-evolution-bar {
       height: 100%;
       border-radius: 4px;
-      background: linear-gradient(to right, #5D5CDE, #9f9ef5);
+      background: linear-gradient(to right, #00c2ff, #b967ff);
       transition: width 0.5s ease;
     }
     
@@ -295,27 +465,27 @@
     }
   </style>
 </head>
-<body class="font-sans bg-oneui-light-bg dark:bg-oneui-dark-bg text-oneui-light-text dark:text-oneui-dark-text transition-colors duration-300">
+<body class="font-sans bg-oneui-light-bg dark:bg-oneui-dark-bg text-oneui-light-text dark:text-oneui-dark-text transition-colors duration-300" style="background-image: url('https://i.imgur.com/GVIHcvz.jpeg'); background-attachment: fixed; background-size: cover; background-position: center;">
   <div class="min-h-screen p-4 md:p-8">
     <!-- Header -->
     <header class="flex flex-col sm:flex-row justify-between items-center mb-6">
-      <h1 id="gameTitle" class="text-3xl font-bold text-primary mb-2 sm:mb-0">EmojiPet</h1>
+      <h1 id="gameTitle" class="text-3xl font-bold text-white mb-2 sm:mb-0 synthwave-text">EmojiPet</h1>
       <div class="flex space-x-2">
-        <button id="questsButton" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
+        <button id="questsButton" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card backdrop-blur-md">
           <span class="text-xl">📋</span>
         </button>
-        <button id="achievementsButton" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
+        <button id="achievementsButton" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card backdrop-blur-md">
           <span class="text-xl">🏆</span>
         </button>
-        <button id="marketButton" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
+        <button id="marketButton" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card backdrop-blur-md">
           <span class="text-xl">🛍️</span>
         </button>
-        <button id="rgbModeToggle" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
+        <button id="rgbModeToggle" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card backdrop-blur-md">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
           </svg>
         </button>
-        <button id="darkModeToggle" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
+        <button id="darkModeToggle" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card backdrop-blur-md">
           <svg id="sunIcon" class="w-6 h-6 text-yellow-500 hidden dark:inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
           </svg>
@@ -329,205 +499,205 @@
     <!-- Main Game Container -->
     <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- My EmojiPets Panel -->
-      <section class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 col-span-1 md:col-span-2">
-        <h2 class="text-2xl font-semibold mb-4">Mes EmojiPets</h2>
+      <section class="ios-card col-span-1 md:col-span-2 p-6">
+        <h2 class="text-2xl font-semibold mb-4 text-white">Mes EmojiPets</h2>
         
         <div id="emojipetsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           <!-- EmojiPets will be generated here -->
         </div>
         
-        <button id="addEmojiPet" class="oneui-button mt-6 w-full py-3 bg-primary hover:bg-secondary text-white font-semibold transition-colors">
+        <button id="addEmojiPet" class="ios-button synthwave-button mt-6 w-full py-3 bg-synthwave-blue hover:bg-synthwave-blue/90 text-white font-semibold transition-colors">
           Créer un nouveau EmojiPet
         </button>
       </section>
       
       <!-- Action Panel -->
-      <section class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6">
-        <h2 class="text-2xl font-semibold mb-4">Actions</h2>
+      <section class="ios-card p-6">
+        <h2 class="text-2xl font-semibold mb-4 text-white">Actions</h2>
         
         <div id="selectedPetInfo" class="hidden">
           <div class="flex items-center space-x-4 mb-6">
             <div id="selectedEmoji" class="text-6xl emoji-display shadow-3d"></div>
             <div>
-              <h3 id="selectedName" class="text-xl font-bold"></h3>
-              <p id="selectedCountry" class="text-sm opacity-70"></p>
-              <p id="selectedMood" class="text-sm"></p>
+              <h3 id="selectedName" class="text-xl font-bold text-white"></h3>
+              <p id="selectedCountry" class="text-sm text-white/70"></p>
+              <p id="selectedMood" class="text-sm text-white"></p>
             </div>
           </div>
           
           <!-- Niveaux et besoins -->
           <div class="mb-4">
             <div class="flex justify-between items-center">
-              <p class="text-sm mb-1">Niveau d'évolution</p>
-              <p id="petLevel" class="text-sm font-bold text-primary">Niveau 1</p>
+              <p class="text-sm mb-1 text-white">Niveau d'évolution</p>
+              <p id="petLevel" class="text-sm font-bold text-synthwave-cyan neon-blue">Niveau 1</p>
             </div>
             <div class="emoji-evolution-progress mb-1">
               <div id="evolutionBar" class="emoji-evolution-bar" style="width: 10%;"></div>
             </div>
-            <p id="evolutionXP" class="text-xs text-gray-500 dark:text-gray-400">XP: 0/100</p>
+            <p id="evolutionXP" class="text-xs text-gray-300">XP: 0/100</p>
           </div>
           
           <!-- Besoins -->
           <div class="grid grid-cols-2 gap-2 mb-4">
             <div>
               <div class="flex justify-between items-center">
-                <span class="text-sm">🍔 Faim</span>
-                <span id="hungerValue" class="text-xs">100%</span>
+                <span class="text-sm text-white">🍔 Faim</span>
+                <span id="hungerValue" class="text-xs text-white">100%</span>
               </div>
-              <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div id="hungerBar" class="h-full bg-green-500 rounded-full" style="width: 100%"></div>
-              </div>
-            </div>
-            
-            <div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm">😊 Bonheur</span>
-                <span id="happinessValue" class="text-xs">100%</span>
-              </div>
-              <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div id="happinessBar" class="h-full bg-pink-500 rounded-full" style="width: 100%"></div>
+              <div class="h-2 w-full bg-gray-200/30 dark:bg-gray-700/30 rounded-full overflow-hidden backdrop-blur-sm">
+                <div id="hungerBar" class="h-full bg-success rounded-full" style="width: 100%"></div>
               </div>
             </div>
             
             <div>
               <div class="flex justify-between items-center">
-                <span class="text-sm">🚿 Propreté</span>
-                <span id="cleanlinessValue" class="text-xs">100%</span>
+                <span class="text-sm text-white">😊 Bonheur</span>
+                <span id="happinessValue" class="text-xs text-white">100%</span>
               </div>
-              <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div id="cleanlinessBar" class="h-full bg-blue-500 rounded-full" style="width: 100%"></div>
+              <div class="h-2 w-full bg-gray-200/30 dark:bg-gray-700/30 rounded-full overflow-hidden backdrop-blur-sm">
+                <div id="happinessBar" class="h-full bg-synthwave-pink rounded-full" style="width: 100%"></div>
               </div>
             </div>
             
             <div>
               <div class="flex justify-between items-center">
-                <span class="text-sm">⚡ Énergie</span>
-                <span id="energyValue" class="text-xs">100%</span>
+                <span class="text-sm text-white">🚿 Propreté</span>
+                <span id="cleanlinessValue" class="text-xs text-white">100%</span>
               </div>
-              <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <div id="energyBar" class="h-full bg-yellow-500 rounded-full" style="width: 100%"></div>
+              <div class="h-2 w-full bg-gray-200/30 dark:bg-gray-700/30 rounded-full overflow-hidden backdrop-blur-sm">
+                <div id="cleanlinessBar" class="h-full bg-synthwave-blue rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+            
+            <div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-white">⚡ Énergie</span>
+                <span id="energyValue" class="text-xs text-white">100%</span>
+              </div>
+              <div class="h-2 w-full bg-gray-200/30 dark:bg-gray-700/30 rounded-full overflow-hidden backdrop-blur-sm">
+                <div id="energyBar" class="h-full bg-synthwave-yellow rounded-full" style="width: 100%"></div>
               </div>
             </div>
           </div>
           
           <div class="space-y-3">
-            <button id="feedPet" class="oneui-button w-full py-2 px-4 bg-green-500 hover:bg-green-600 text-white font-medium emoji-action">
+            <button id="feedPet" class="ios-button w-full py-2 px-4 bg-success hover:bg-success/90 text-white font-medium emoji-action">
               🍔 Nourrir
             </button>
-            <button id="playWithPet" class="oneui-button w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-medium emoji-action">
+            <button id="playWithPet" class="ios-button w-full py-2 px-4 bg-synthwave-blue hover:bg-synthwave-blue/90 text-white font-medium emoji-action">
               🎾 Jouer
             </button>
-            <button id="cleanPet" class="oneui-button w-full py-2 px-4 bg-yellow-500 hover:bg-yellow-600 text-white font-medium emoji-action">
+            <button id="cleanPet" class="ios-button w-full py-2 px-4 bg-info hover:bg-info/90 text-white font-medium emoji-action">
               🛁 Nettoyer
             </button>
-            <button id="sleepPet" class="oneui-button w-full py-2 px-4 bg-indigo-500 hover:bg-indigo-600 text-white font-medium emoji-action">
+            <button id="sleepPet" class="ios-button w-full py-2 px-4 bg-synthwave-purple hover:bg-synthwave-purple/90 text-white font-medium emoji-action">
               😴 Faire dormir
             </button>
-            <button id="complimentPet" class="oneui-button w-full py-2 px-4 bg-purple-500 hover:bg-purple-600 text-white font-medium emoji-action">
+            <button id="complimentPet" class="ios-button w-full py-2 px-4 bg-synthwave-purple hover:bg-synthwave-purple/90 text-white font-medium emoji-action">
               💌 Lui parler
             </button>
-            <button id="shopButton" class="oneui-button w-full py-2 px-4 bg-amber-500 hover:bg-amber-600 text-white font-medium emoji-action">
-              🛒 Boutique <span id="coinDisplay" class="ml-1 bg-yellow-300 text-amber-800 px-1 rounded-full text-xs">100</span>
+            <button id="shopButton" class="ios-button w-full py-2 px-4 bg-warning hover:bg-warning/90 text-white font-medium emoji-action">
+              🛒 Boutique <span id="coinDisplay" class="ml-1 bg-white text-warning px-2 py-0.5 rounded-full text-xs font-bold">100</span>
             </button>
-            <button id="marryPet" class="oneui-button w-full py-2 px-4 bg-pink-500 hover:bg-pink-600 text-white font-medium emoji-action">
+            <button id="marryPet" class="ios-button w-full py-2 px-4 bg-synthwave-pink hover:bg-synthwave-pink/90 text-white font-medium emoji-action">
               💍 Marier
             </button>
-            <button id="deletePet" class="oneui-button w-full py-2 px-4 bg-red-500 hover:bg-red-600 text-white font-medium emoji-action">
+            <button id="deletePet" class="ios-button w-full py-2 px-4 bg-danger hover:bg-danger/90 text-white font-medium emoji-action">
               🗑️ Supprimer
             </button>
           </div>
         </div>
         
         <div id="noSelection" class="text-center py-12">
-          <p class="text-lg text-gray-500 dark:text-gray-400">Sélectionnez un EmojiPet pour interagir</p>
+          <p class="text-lg text-white/60">Sélectionnez un EmojiPet pour interagir</p>
         </div>
       </section>
     </main>
     
     <!-- Creation Modal -->
     <div id="creationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
-      <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-        <h2 class="text-2xl font-semibold mb-4">Créer un EmojiPet</h2>
+      <div class="ios-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+        <h2 class="text-2xl font-semibold mb-4 text-white">Créer un EmojiPet</h2>
         
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-1">Nom</label>
-            <input id="petName" type="text" class="w-full p-3 rounded-xl border border-oneui-light-border dark:border-oneui-dark-border bg-white dark:bg-gray-800 text-base" placeholder="Nom de votre EmojiPet">
+            <label class="block text-sm font-medium mb-1 text-white">Nom</label>
+            <input id="petName" type="text" class="w-full p-3 rounded-xl border border-oneui-light-border dark:border-oneui-dark-border bg-white/20 dark:bg-gray-800/30 text-white backdrop-blur-md text-base" placeholder="Nom de votre EmojiPet">
           </div>
           
           <div>
-            <label class="block text-sm font-medium mb-1">Type d'animal</label>
+            <label class="block text-sm font-medium mb-1 text-white">Type d'animal</label>
             <div class="grid grid-cols-4 gap-2">
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐶</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐱</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐰</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐼</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦊</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦁</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐮</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐷</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐵</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐻</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐨</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦝</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐲</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦄</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦒</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦓</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐘</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦔</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐢</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🐬</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 phoenix-emoji">🦅</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 shark-emoji">🦈</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦖</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐶</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐱</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐰</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐼</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🦊</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🦁</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐮</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐷</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐵</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐻</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐨</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🦝</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐲</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🦄</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🦒</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🦓</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐘</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🦔</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐢</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🐬</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 phoenix-emoji backdrop-blur-sm">🦅</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 shark-emoji backdrop-blur-sm">🦈</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🦖</button>
               <!-- Humains et emoji inclusifs -->
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🙎‍♀️</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🙎</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🙎‍♂️</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🧑‍🦽</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👨‍🦽</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👩‍🦼</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🧑‍🦼</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👨‍🦯</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🧎‍♀️</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👩‍❤️‍👨</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👩‍❤️‍👩</button>
-              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👩‍❤️‍💋‍👨</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🙎‍♀️</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🙎</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🙎‍♂️</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🧑‍🦽</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">👨‍🦽</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">👩‍🦼</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🧑‍🦼</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">👨‍🦯</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🧎‍♀️</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">👩‍❤️‍👨</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">👩‍❤️‍👩</button>
+              <button class="emoji-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">👩‍❤️‍💋‍👨</button>
             </div>
           </div>
           
           <div>
-            <label class="block text-sm font-medium mb-1">Accessoire</label>
+            <label class="block text-sm font-medium mb-1 text-white">Accessoire</label>
             <div class="grid grid-cols-4 gap-2">
-              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🎩</button>
-              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👑</button>
-              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🧢</button>
-              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🕶️</button>
-              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🧣</button>
-              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦺</button>
-              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">👔</button>
-              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🦮</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🎩</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">👑</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🧢</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🕶️</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🧣</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🦺</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">👔</button>
+              <button class="accessory-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🦮</button>
             </div>
           </div>
           
           <div>
-            <label class="block text-sm font-medium mb-1">Symbole religieux</label>
+            <label class="block text-sm font-medium mb-1 text-white">Symbole religieux</label>
             <div class="grid grid-cols-4 gap-2">
-              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">✝️</button>
-              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">☪️</button>
-              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">✡️</button>
-              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🕉️</button>
-              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">☸️</button>
-              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">🕎</button>
-              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">☯️</button>
-              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">☦️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">✝️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">☪️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">✡️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🕉️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">☸️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">🕎</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">☯️</button>
+              <button class="religion-option p-2 text-2xl rounded-lg hover:bg-gray-100/30 dark:hover:bg-gray-700/30 backdrop-blur-sm">☦️</button>
             </div>
           </div>
           
           <div>
-            <label class="block text-sm font-medium mb-1">Pays d'origine</label>
-            <select id="petCountry" class="w-full p-3 rounded-xl border border-oneui-light-border dark:border-oneui-dark-border bg-white dark:bg-gray-800 text-base">
+            <label class="block text-sm font-medium mb-1 text-white">Pays d'origine</label>
+            <select id="petCountry" class="w-full p-3 rounded-xl border border-gray-300/30 dark:border-gray-600/30 bg-white/20 dark:bg-gray-800/30 text-white backdrop-blur-md text-base">
               <option value="🇦🇫">Afghanistan 🇦🇫</option>
               <option value="🇿🇦">Afrique du Sud 🇿🇦</option>
               <option value="🇦🇱">Albanie 🇦🇱</option>
@@ -725,10 +895,10 @@
           </div>
           
           <div class="pt-4 flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
-            <button id="cancelCreation" class="oneui-button py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-xl font-medium">
+            <button id="cancelCreation" class="ios-button py-2 px-4 border border-gray-300/30 dark:border-gray-600/30 rounded-xl font-medium text-white bg-black/30 backdrop-blur-md">
               Annuler
             </button>
-            <button id="confirmCreation" class="oneui-button py-2 px-4 bg-primary hover:bg-secondary text-white font-medium">
+            <button id="confirmCreation" class="ios-button synthwave-button py-2 px-4 bg-synthwave-blue hover:bg-synthwave-blue/90 text-white font-medium">
               Créer
             </button>
           </div>
@@ -738,15 +908,15 @@
     
     <!-- Marriage Modal -->
     <div id="marriageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
-      <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4">
-        <h2 class="text-2xl font-semibold mb-4">Marier votre EmojiPet</h2>
+      <div class="ios-card p-6 w-full max-w-md mx-4">
+        <h2 class="text-2xl font-semibold mb-4 text-white">Marier votre EmojiPet</h2>
         
         <div id="marriagePetsList" class="grid grid-cols-2 gap-3 mb-6">
           <!-- Available pets for marriage will be listed here -->
         </div>
         
         <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
-          <button id="cancelMarriage" class="oneui-button py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-xl font-medium">
+          <button id="cancelMarriage" class="ios-button py-2 px-4 border border-gray-300/30 dark:border-gray-600/30 rounded-xl font-medium text-white bg-black/30 backdrop-blur-md">
             Annuler
           </button>
         </div>
@@ -755,46 +925,46 @@
   
   <!-- Compliment Modal -->
   <div id="complimentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
-    <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4">
-      <h2 class="text-2xl font-semibold mb-4">Parler à <span id="complimentPetName"></span></h2>
+    <div class="ios-card p-6 w-full max-w-md mx-4">
+      <h2 class="text-2xl font-semibold mb-4 text-white">Parler à <span id="complimentPetName"></span></h2>
       
       <div class="grid grid-cols-2 gap-3 mb-6">
-        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+        <button class="phrase-option p-4 bg-white/20 dark:bg-gray-800/40 rounded-xl text-center hover:bg-purple-50/30 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md text-white">
           <span class="text-2xl mb-2">😘</span>
           <div class="font-medium">Bisou</div>
         </button>
-        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+        <button class="phrase-option p-4 bg-white/20 dark:bg-gray-800/40 rounded-xl text-center hover:bg-purple-50/30 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md text-white">
           <span class="text-2xl mb-2">❤️</span>
           <div class="font-medium">Je t'aime</div>
         </button>
-        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+        <button class="phrase-option p-4 bg-white/20 dark:bg-gray-800/40 rounded-xl text-center hover:bg-purple-50/30 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md text-white">
           <span class="text-2xl mb-2">🥰</span>
           <div class="font-medium">Je t'adore</div>
         </button>
-        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+        <button class="phrase-option p-4 bg-white/20 dark:bg-gray-800/40 rounded-xl text-center hover:bg-purple-50/30 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md text-white">
           <span class="text-2xl mb-2">🏆</span>
           <div class="font-medium">Tu es le meilleur</div>
         </button>
-        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+        <button class="phrase-option p-4 bg-white/20 dark:bg-gray-800/40 rounded-xl text-center hover:bg-purple-50/30 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md text-white">
           <span class="text-2xl mb-2">✨</span>
           <div class="font-medium">Tu es magnifique</div>
         </button>
-        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+        <button class="phrase-option p-4 bg-white/20 dark:bg-gray-800/40 rounded-xl text-center hover:bg-purple-50/30 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md text-white">
           <span class="text-2xl mb-2">🌟</span>
           <div class="font-medium">Tu es spécial</div>
         </button>
-        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+        <button class="phrase-option p-4 bg-white/20 dark:bg-gray-800/40 rounded-xl text-center hover:bg-purple-50/30 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md text-white">
           <span class="text-2xl mb-2">🤗</span>
           <div class="font-medium">Câlin</div>
         </button>
-        <button class="phrase-option p-4 bg-white dark:bg-gray-800 rounded-xl text-center hover:bg-purple-50 dark:hover:bg-purple-900 transition-colors">
+        <button class="phrase-option p-4 bg-white/20 dark:bg-gray-800/40 rounded-xl text-center hover:bg-purple-50/30 dark:hover:bg-purple-900/40 transition-colors backdrop-blur-md text-white">
           <span class="text-2xl mb-2">🙌</span>
           <div class="font-medium">Bravo!</div>
         </button>
       </div>
       
       <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
-        <button id="cancelCompliment" class="oneui-button py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-xl font-medium">
+        <button id="cancelCompliment" class="ios-button py-2 px-4 border border-gray-300/30 dark:border-gray-600/30 rounded-xl font-medium text-white bg-black/30 backdrop-blur-md">
           Fermer
         </button>
       </div>
@@ -803,16 +973,16 @@
   
   <!-- Delete Confirmation Modal -->
   <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
-    <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4">
-      <h2 class="text-2xl font-semibold mb-4">Supprimer l'EmojiPet</h2>
+    <div class="ios-card p-6 w-full max-w-md mx-4">
+      <h2 class="text-2xl font-semibold mb-4 text-white">Supprimer l'EmojiPet</h2>
       
-      <p class="mb-6 text-gray-700 dark:text-gray-300">Êtes-vous sûr de vouloir supprimer cet EmojiPet ? Cette action est irréversible.</p>
+      <p class="mb-6 text-gray-100">Êtes-vous sûr de vouloir supprimer cet EmojiPet ? Cette action est irréversible.</p>
       
       <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
-        <button id="cancelDelete" class="oneui-button py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-xl font-medium">
+        <button id="cancelDelete" class="ios-button py-2 px-4 border border-gray-300/30 dark:border-gray-600/30 rounded-xl font-medium text-white bg-black/30 backdrop-blur-md">
           Annuler
         </button>
-        <button id="confirmDelete" class="oneui-button py-2 px-4 bg-red-500 hover:bg-red-600 text-white font-medium">
+        <button id="confirmDelete" class="ios-button py-2 px-4 bg-danger hover:bg-danger/90 text-white font-medium">
           Supprimer
         </button>
       </div>
@@ -821,8 +991,8 @@
   
   <!-- Achievements Modal -->
   <div id="achievementsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
-    <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
-      <h2 class="text-2xl font-semibold mb-4 flex items-center">
+    <div class="ios-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+      <h2 class="text-2xl font-semibold mb-4 flex items-center text-white">
         <span class="mr-2">🏆</span>
         Défis et Succès
       </h2>
@@ -831,7 +1001,7 @@
         <!-- Achievements will be listed here -->
       </div>
       
-      <button id="closeAchievements" class="oneui-button w-full py-3 px-4 bg-primary hover:bg-secondary text-white font-medium">
+      <button id="closeAchievements" class="ios-button synthwave-button w-full py-3 px-4 bg-synthwave-blue hover:bg-synthwave-blue/90 text-white font-medium">
         Fermer
       </button>
     </div>
@@ -839,14 +1009,14 @@
   
   <!-- Quests Modal -->
   <div id="questsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
-    <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+    <div class="ios-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-semibold flex items-center">
+        <h2 class="text-2xl font-semibold flex items-center text-white">
           <span class="mr-2">📋</span>
           Quêtes
         </h2>
-        <div class="bg-amber-100 dark:bg-amber-900 px-3 py-1 rounded-full text-amber-800 dark:text-amber-100 font-medium">
-          <span id="questCoins">${gameCoins}</span> 🪙
+        <div class="bg-gray-900/40 px-3 py-1 rounded-full font-medium backdrop-blur-sm text-white border border-white/10">
+          <span id="questCoins">100</span> 🪙
         </div>
       </div>
       
@@ -854,7 +1024,7 @@
         <!-- Quests will be listed here -->
       </div>
       
-      <button id="closeQuests" class="oneui-button w-full py-3 px-4 bg-primary hover:bg-secondary text-white font-medium">
+      <button id="closeQuests" class="ios-button synthwave-button w-full py-3 px-4 bg-synthwave-blue hover:bg-synthwave-blue/90 text-white font-medium">
         Fermer
       </button>
     </div>
@@ -862,21 +1032,21 @@
   
   <!-- Market Modal -->
   <div id="marketModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
-    <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+    <div class="ios-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-semibold flex items-center">
+        <h2 class="text-2xl font-semibold flex items-center text-white">
           <span class="mr-2">🛍️</span>
           Marché des Joueurs
         </h2>
-        <div class="bg-amber-100 dark:bg-amber-900 px-3 py-1 rounded-full text-amber-800 dark:text-amber-100 font-medium">
-          <span id="marketCoins">${gameCoins}</span> 🪙
+        <div class="bg-amber-900/40 px-3 py-1 rounded-full text-amber-200 font-medium backdrop-blur-sm border border-amber-500/20">
+          <span id="marketCoins">100</span> 🪙
         </div>
       </div>
       
       <div class="mb-4">
         <div class="flex justify-between items-center mb-2">
-          <h3 class="font-semibold">Objets disponibles</h3>
-          <button id="refreshMarket" class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-gray-600">
+          <h3 class="font-semibold text-white">Objets disponibles</h3>
+          <button id="refreshMarket" class="p-2 bg-gray-900/40 rounded-lg text-sm hover:bg-gray-800/60 text-white backdrop-blur-sm">
             🔄 Actualiser
           </button>
         </div>
@@ -885,33 +1055,33 @@
         </div>
       </div>
       
-      <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
-        <h3 class="font-semibold mb-2">Mettre en vente un objet</h3>
-        <div id="sellItemSection" class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
-          <select id="sellItemType" class="w-full p-2 mb-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+      <div class="border-t border-gray-200/20 dark:border-gray-700/20 pt-4 mb-4">
+        <h3 class="font-semibold mb-2 text-white">Mettre en vente un objet</h3>
+        <div id="sellItemSection" class="bg-gray-900/30 p-3 rounded-lg backdrop-blur-md">
+          <select id="sellItemType" class="w-full p-2 mb-2 rounded-lg bg-white/20 dark:bg-gray-800/30 border border-gray-200/30 dark:border-gray-600/30 text-white backdrop-blur-md">
             <option value="">Sélectionner un type d'objet</option>
             <option value="accessory">Accessoire</option>
             <option value="potion">Potion</option>
           </select>
           <div class="flex space-x-2">
-            <input type="number" id="sellItemPrice" min="1" max="1000" placeholder="Prix" class="p-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 w-1/2">
-            <button id="sellItemBtn" class="p-2 bg-primary hover:bg-secondary text-white rounded-lg flex-1">Mettre en vente</button>
+            <input type="number" id="sellItemPrice" min="1" max="1000" placeholder="Prix" class="p-2 rounded-lg border border-gray-200/30 dark:border-gray-600/30 bg-white/20 dark:bg-gray-800/30 w-1/2 text-white backdrop-blur-md">
+            <button id="sellItemBtn" class="p-2 bg-synthwave-blue hover:bg-synthwave-blue/90 text-white rounded-lg flex-1">Mettre en vente</button>
           </div>
         </div>
       </div>
       
-      <button id="closeMarket" class="oneui-button w-full py-3 px-4 bg-primary hover:bg-secondary text-white font-medium">
+      <button id="closeMarket" class="ios-button synthwave-button w-full py-3 px-4 bg-synthwave-blue hover:bg-synthwave-blue/90 text-white font-medium">
         Fermer
       </button>
     </div>
   </div>
   
   <!-- Quest/Achievement Notification -->
-  <div id="achievementNotification" class="fixed top-4 right-4 z-50 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-500 ease-out flex items-center">
+  <div id="achievementNotification" class="fixed top-4 right-4 z-50 bg-black/70 backdrop-blur-lg p-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-500 ease-out flex items-center border border-purple-500/50">
     <div class="text-3xl mr-3 achievement-icon"></div>
     <div>
-      <h3 class="font-bold text-lg achievement-title"></h3>
-      <p class="text-sm text-gray-600 dark:text-gray-400 achievement-desc"></p>
+      <h3 class="font-bold text-lg achievement-title text-white"></h3>
+      <p class="text-sm text-gray-300 achievement-desc"></p>
     </div>
   </div>
 
@@ -1106,35 +1276,36 @@
         xpReward: 70
       }
     ];
-    // Objets disponibles dans la boutique
+    
+    // Objets disponibles dans la boutique avec thème synthwave
     const shopItems = [
       {
         id: 'crown',
-        name: 'Couronne Royale',
+        name: 'Couronne Néon',
         emoji: '👑',
-        description: 'Une couronne royale pour votre EmojiPet',
+        description: 'Une couronne brillante pour votre EmojiPet',
         price: 50,
         type: 'accessory'
       },
       {
         id: 'glasses',
-        name: 'Lunettes de Soleil',
+        name: 'Lunettes Rétro',
         emoji: '🕶️',
-        description: 'Des lunettes stylées pour votre EmojiPet',
+        description: 'Des lunettes de soleil futuristes',
         price: 30,
         type: 'accessory'
       },
       {
         id: 'bowtie',
-        name: 'Nœud Papillon',
+        name: 'Nœud Papillon Lumineux',
         emoji: '🎀',
-        description: 'Un nœud papillon élégant',
+        description: 'Un nœud papillon qui brille dans le noir',
         price: 25,
         type: 'accessory'
       },
       {
         id: 'xppotion',
-        name: 'Potion d\'XP',
+        name: 'Potion Synthwave',
         emoji: '🧪',
         description: 'Donne +50 XP à votre EmojiPet',
         price: 100,
@@ -1146,7 +1317,7 @@
       },
       {
         id: 'energypotion',
-        name: 'Potion d\'Énergie',
+        name: 'Boisson Électrique',
         emoji: '⚡',
         description: 'Remplit l\'énergie de votre EmojiPet à 100%',
         price: 60,
@@ -1158,7 +1329,7 @@
       },
       {
         id: 'happypotion',
-        name: 'Potion de Bonheur',
+        name: 'Néon Euphoria',
         emoji: '😊',
         description: 'Remplit le bonheur de votre EmojiPet à 100%',
         price: 70,
@@ -1258,7 +1429,7 @@
       
       achievements.forEach(achievement => {
         const achievementEl = document.createElement('div');
-        achievementEl.className = `p-4 ${achievement.completed ? 'bg-purple-50 dark:bg-purple-900/30' : 'bg-white dark:bg-gray-800'} rounded-xl border ${achievement.completed ? 'border-primary' : 'border-gray-200 dark:border-gray-700'}`;
+        achievementEl.className = `p-4 ${achievement.completed ? 'bg-purple-900/30' : 'bg-black/30'} rounded-xl border ${achievement.completed ? 'border-synthwave-purple' : 'border-gray-600/30'} backdrop-blur-sm`;
         
         const progress = Math.min(achievement.progress, achievement.requirement);
         const percentage = Math.floor((progress / achievement.requirement) * 100);
@@ -1267,17 +1438,17 @@
           <div class="flex items-center mb-2">
             <div class="text-3xl mr-3">${achievement.icon}</div>
             <div>
-              <h3 class="font-bold text-lg">${achievement.name} ${achievement.completed ? '🏆' : ''}</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">${achievement.description}</p>
+              <h3 class="font-bold text-lg text-white">${achievement.name} ${achievement.completed ? '🏆' : ''}</h3>
+              <p class="text-sm text-gray-300">${achievement.description}</p>
             </div>
           </div>
           <div class="mt-2">
-            <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div class="h-full ${achievement.completed ? 'bg-primary' : 'bg-gray-400 dark:bg-gray-500'} rounded-full" style="width: ${percentage}%"></div>
+            <div class="h-2 w-full bg-gray-900/50 dark:bg-gray-800/50 rounded-full overflow-hidden">
+              <div class="h-full ${achievement.completed ? 'bg-synthwave-purple' : 'bg-gray-400 dark:bg-gray-600'} rounded-full" style="width: ${percentage}%"></div>
             </div>
-            <p class="text-xs text-right mt-1 ${achievement.completed ? 'text-primary' : 'text-gray-500'}">${progress}/${achievement.requirement}</p>
+            <p class="text-xs text-right mt-1 ${achievement.completed ? 'text-synthwave-purple' : 'text-gray-400'}">${progress}/${achievement.requirement}</p>
           </div>
-          ${achievement.completed ? `<p class="text-sm text-primary mt-2">+${achievement.xpReward} XP</p>` : ''}
+          ${achievement.completed ? `<p class="text-sm text-synthwave-purple mt-2">+${achievement.xpReward} XP</p>` : ''}
         `;
         
         container.appendChild(achievementEl);
@@ -1361,24 +1532,24 @@
       // Set up emoji and accessory selection
       document.querySelectorAll('.emoji-option').forEach(btn => {
         btn.addEventListener('click', () => {
-          document.querySelectorAll('.emoji-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
-          btn.classList.add('ring-2', 'ring-primary');
+          document.querySelectorAll('.emoji-option').forEach(b => b.classList.remove('ring-2', 'ring-synthwave-blue'));
+          btn.classList.add('ring-2', 'ring-synthwave-blue');
           selectedEmoji = btn.textContent;
         });
       });
       
       document.querySelectorAll('.accessory-option').forEach(btn => {
         btn.addEventListener('click', () => {
-          document.querySelectorAll('.accessory-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
-          btn.classList.add('ring-2', 'ring-primary');
+          document.querySelectorAll('.accessory-option').forEach(b => b.classList.remove('ring-2', 'ring-synthwave-blue'));
+          btn.classList.add('ring-2', 'ring-synthwave-blue');
           selectedAccessory = btn.textContent;
         });
       });
       
       document.querySelectorAll('.religion-option').forEach(btn => {
         btn.addEventListener('click', () => {
-          document.querySelectorAll('.religion-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
-          btn.classList.add('ring-2', 'ring-primary');
+          document.querySelectorAll('.religion-option').forEach(b => b.classList.remove('ring-2', 'ring-synthwave-blue'));
+          btn.classList.add('ring-2', 'ring-synthwave-blue');
           selectedReligion = btn.textContent;
         });
       });
@@ -1460,22 +1631,22 @@
       
       if (value < 30) {
         // Critical level - red
-        if (barId === 'hungerBar') bar.className = 'h-full bg-red-500 rounded-full';
-        else if (barId === 'happinessBar') bar.className = 'h-full bg-red-500 rounded-full';
-        else if (barId === 'cleanlinessBar') bar.className = 'h-full bg-red-500 rounded-full';
-        else if (barId === 'energyBar') bar.className = 'h-full bg-red-500 rounded-full';
+        if (barId === 'hungerBar') bar.className = 'h-full bg-danger rounded-full';
+        else if (barId === 'happinessBar') bar.className = 'h-full bg-danger rounded-full';
+        else if (barId === 'cleanlinessBar') bar.className = 'h-full bg-danger rounded-full';
+        else if (barId === 'energyBar') bar.className = 'h-full bg-danger rounded-full';
       } else if (value < 60) {
         // Warning level - yellow/orange
-        if (barId === 'hungerBar') bar.className = 'h-full bg-yellow-500 rounded-full';
-        else if (barId === 'happinessBar') bar.className = 'h-full bg-orange-500 rounded-full';
-        else if (barId === 'cleanlinessBar') bar.className = 'h-full bg-yellow-500 rounded-full';
-        else if (barId === 'energyBar') bar.className = 'h-full bg-yellow-500 rounded-full';
+        if (barId === 'hungerBar') bar.className = 'h-full bg-warning rounded-full';
+        else if (barId === 'happinessBar') bar.className = 'h-full bg-warning rounded-full';
+        else if (barId === 'cleanlinessBar') bar.className = 'h-full bg-warning rounded-full';
+        else if (barId === 'energyBar') bar.className = 'h-full bg-warning rounded-full';
       } else {
         // Good level - original colors
-        if (barId === 'hungerBar') bar.className = 'h-full bg-green-500 rounded-full';
-        else if (barId === 'happinessBar') bar.className = 'h-full bg-pink-500 rounded-full';
-        else if (barId === 'cleanlinessBar') bar.className = 'h-full bg-blue-500 rounded-full';
-        else if (barId === 'energyBar') bar.className = 'h-full bg-amber-500 rounded-full';
+        if (barId === 'hungerBar') bar.className = 'h-full bg-success rounded-full';
+        else if (barId === 'happinessBar') bar.className = 'h-full bg-synthwave-pink rounded-full';
+        else if (barId === 'cleanlinessBar') bar.className = 'h-full bg-synthwave-blue rounded-full';
+        else if (barId === 'energyBar') bar.className = 'h-full bg-synthwave-yellow rounded-full';
       }
     }
     
@@ -1486,7 +1657,7 @@
       
       pets.forEach(pet => {
         const petElement = document.createElement('div');
-        petElement.className = 'emoji-container shadow-3d p-4 bg-white dark:bg-gray-800 rounded-2xl cursor-pointer relative flex flex-col items-center';
+        petElement.className = 'emoji-container shadow-3d p-4 bg-black/40 dark:bg-gray-900/40 rounded-2xl cursor-pointer relative flex flex-col items-center backdrop-blur-md border border-white/10';
         petElement.dataset.petId = pet.id;
         
         // Add country flag
@@ -1543,7 +1714,7 @@
         
         // Add name
         const nameElement = document.createElement('span');
-        nameElement.className = 'font-medium text-center mt-1';
+        nameElement.className = 'font-medium text-center mt-1 text-white';
         nameElement.textContent = pet.name;
         petElement.appendChild(nameElement);
         
@@ -1566,13 +1737,13 @@
       // Select the pet in the grid
       document.querySelectorAll('.emoji-container').forEach(el => {
         if (el.dataset.petId === pet.id) {
-          el.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+          el.classList.add('ring-2', 'ring-synthwave-blue', 'ring-offset-2');
           
           // Add animation to the selected pet
           const emojiEl = el.querySelector('.emoji-display');
           emojiEl.classList.add('emoji-selected');
         } else {
-          el.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+          el.classList.remove('ring-2', 'ring-synthwave-blue', 'ring-offset-2');
           const emojiEl = el.querySelector('.emoji-display');
           emojiEl.classList.remove('emoji-selected');
         }
@@ -1637,9 +1808,9 @@
       selectedAccessory = null;
       selectedReligion = null;
       
-      document.querySelectorAll('.emoji-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
-      document.querySelectorAll('.accessory-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
-      document.querySelectorAll('.religion-option').forEach(b => b.classList.remove('ring-2', 'ring-primary'));
+      document.querySelectorAll('.emoji-option').forEach(b => b.classList.remove('ring-2', 'ring-synthwave-blue'));
+      document.querySelectorAll('.accessory-option').forEach(b => b.classList.remove('ring-2', 'ring-synthwave-blue'));
+      document.querySelectorAll('.religion-option').forEach(b => b.classList.remove('ring-2', 'ring-synthwave-blue'));
     }
     
     // Hide creation modal
@@ -1667,12 +1838,14 @@
         happiness: 100,
         hunger: 100,
         cleanliness: 100,
+        energy: 100,
         xp: 0,
         evolutionStage: 0,
         evolutionThreshold: 100,
         marriedTo: null,
         createdAt: Date.now(),
-        lastInteraction: Date.now()
+        lastInteraction: Date.now(),
+        mood: 3
       };
       
       // Update collector achievement when creating a new pet
@@ -1783,18 +1956,18 @@
       const eligiblePets = pets.filter(p => p.id !== selectedPet.id && !p.marriedTo);
       
       if (eligiblePets.length === 0) {
-        marriageList.innerHTML = '<p class="col-span-2 text-center py-4 text-gray-500">Aucun EmojiPet disponible pour un mariage</p>';
+        marriageList.innerHTML = '<p class="col-span-2 text-center py-4 text-gray-300">Aucun EmojiPet disponible pour un mariage</p>';
       } else {
         eligiblePets.forEach(pet => {
           const petEl = document.createElement('div');
-          petEl.className = 'p-4 bg-white dark:bg-gray-800 rounded-xl flex flex-col items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors';
+          petEl.className = 'p-4 bg-black/30 dark:bg-gray-800/30 rounded-xl flex flex-col items-center cursor-pointer hover:bg-purple-900/20 dark:hover:bg-purple-900/30 transition-colors backdrop-blur-md border border-white/10';
           
           const emojiEl = document.createElement('div');
           emojiEl.className = 'text-4xl mb-2';
           emojiEl.textContent = pet.emoji;
           
           const nameEl = document.createElement('div');
-          nameEl.className = 'font-medium text-center';
+          nameEl.className = 'font-medium text-center text-white';
           nameEl.textContent = pet.name;
           
           const flagEl = document.createElement('div');
@@ -2264,7 +2437,7 @@
       if (!container) return;
       
       const bubble = document.createElement('div');
-      bubble.className = 'absolute top-0 right-0 transform -translate-y-full bg-white dark:bg-gray-800 p-2 rounded-xl border border-gray-200 dark:border-gray-600';
+      bubble.className = 'absolute top-0 right-0 transform -translate-y-full bg-black/60 dark:bg-gray-800/60 p-2 rounded-xl border border-white/10 backdrop-blur-md';
       bubble.style.minWidth = '80px';
       bubble.style.maxWidth = '150px';
       bubble.style.zIndex = 10;
@@ -2272,8 +2445,8 @@
       // Add speech bubble tail
       bubble.style.position = 'relative';
       bubble.innerHTML = `
-        <div class="text-sm font-medium text-center">${message}</div>
-        <div class="absolute bottom-0 right-3 transform translate-y-1/2 rotate-45 w-3 h-3 bg-white dark:bg-gray-800 border-r border-b border-gray-200 dark:border-gray-600"></div>
+        <div class="text-sm font-medium text-center text-white">${message}</div>
+        <div class="absolute bottom-0 right-3 transform translate-y-1/2 rotate-45 w-3 h-3 bg-black/60 dark:bg-gray-800/60 border-r border-b border-white/10"></div>
       `;
       
       container.appendChild(bubble);
@@ -2377,7 +2550,7 @@
       
       quests.forEach(quest => {
         const questEl = document.createElement('div');
-        questEl.className = `p-4 ${quest.completed ? 'bg-amber-50 dark:bg-amber-900/30' : 'bg-white dark:bg-gray-800'} rounded-xl border ${quest.completed ? 'border-amber-500' : 'border-gray-200 dark:border-gray-700'}`;
+        questEl.className = `p-4 ${quest.completed ? 'bg-amber-900/30' : 'bg-black/30'} rounded-xl border ${quest.completed ? 'border-amber-500/30' : 'border-gray-600/30'} backdrop-blur-sm`;
         
         const progress = Math.min(quest.progress, quest.requirement);
         const percentage = Math.floor((progress / quest.requirement) * 100);
@@ -2386,17 +2559,17 @@
           <div class="flex items-center mb-2">
             <div class="text-3xl mr-3">${quest.icon}</div>
             <div>
-              <h3 class="font-bold text-lg">${quest.name} ${quest.completed ? '✅' : ''}</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">${quest.description}</p>
+              <h3 class="font-bold text-lg text-white">${quest.name} ${quest.completed ? '✅' : ''}</h3>
+              <p class="text-sm text-gray-300">${quest.description}</p>
             </div>
           </div>
           <div class="mt-2">
-            <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div class="h-full ${quest.completed ? 'bg-amber-500' : 'bg-gray-400 dark:bg-gray-500'} rounded-full" style="width: ${percentage}%"></div>
+            <div class="h-2 w-full bg-gray-900/50 dark:bg-gray-800/50 rounded-full overflow-hidden">
+              <div class="h-full ${quest.completed ? 'bg-amber-500' : 'bg-gray-400 dark:bg-gray-600'} rounded-full" style="width: ${percentage}%"></div>
             </div>
-            <p class="text-xs text-right mt-1 ${quest.completed ? 'text-amber-500' : 'text-gray-500'}">${progress}/${quest.requirement}</p>
+            <p class="text-xs text-right mt-1 ${quest.completed ? 'text-amber-300' : 'text-gray-300'}">${progress}/${quest.requirement}</p>
           </div>
-          ${quest.completed ? `<p class="text-sm text-amber-500 mt-2">
+          ${quest.completed ? `<p class="text-sm text-amber-300 mt-2">
             ${quest.coinReward ? `+${quest.coinReward} 🪙` : ''}
             ${quest.xpReward ? `+${quest.xpReward} XP` : ''}
           </p>` : ''}
@@ -2443,21 +2616,21 @@
       const numItems = 3 + Math.floor(Math.random() * 4);
       
       // Generate random sellers
-      const sellerNames = ['EmojiMaster42', 'PetLover99', 'AnimalFriend', 'EmojiFan2023', 'VirtualPetPro'];
+      const sellerNames = ['NeongMaster', 'SynthWaver', 'RetroGamer', 'VaporFan', 'CyberPunk2023'];
       
       // Possible accessories
       const marketAccessories = [
-        { emoji: '👑', name: 'Couronne Royale', rarity: 'legendary', price: Math.floor(280 + Math.random() * 50) },
-        { emoji: '🎩', name: 'Chapeau Haut-de-forme', rarity: 'rare', price: Math.floor(80 + Math.random() * 20) },
-        { emoji: '🧢', name: 'Casquette', rarity: 'common', price: Math.floor(20 + Math.random() * 10) },
-        { emoji: '🕶️', name: 'Lunettes de Soleil', rarity: 'uncommon', price: Math.floor(40 + Math.random() * 15) },
-        { emoji: '🧣', name: 'Écharpe', rarity: 'common', price: Math.floor(15 + Math.random() * 10) },
-        { emoji: '🦺', name: 'Gilet de Sécurité', rarity: 'uncommon', price: Math.floor(35 + Math.random() * 15) },
-        { emoji: '👔', name: 'Cravate', rarity: 'rare', price: Math.floor(60 + Math.random() * 20) },
-        { emoji: '🎀', name: 'Nœud Papillon Rose', rarity: 'rare', price: Math.floor(70 + Math.random() * 20) },
-        { emoji: '👓', name: 'Lunettes', rarity: 'common', price: Math.floor(25 + Math.random() * 10) },
-        { emoji: '🧤', name: 'Gants', rarity: 'uncommon', price: Math.floor(45 + Math.random() * 15) },
-        { emoji: '💎', name: 'Bijou Précieux', rarity: 'epic', price: Math.floor(150 + Math.random() * 50) }
+        { emoji: '👑', name: 'Couronne Néon', rarity: 'legendary', price: Math.floor(280 + Math.random() * 50) },
+        { emoji: '🎩', name: 'Chapeau Rétro', rarity: 'rare', price: Math.floor(80 + Math.random() * 20) },
+        { emoji: '🧢', name: 'Casquette Cyberpunk', rarity: 'common', price: Math.floor(20 + Math.random() * 10) },
+        { emoji: '🕶️', name: 'Lunettes Futuristes', rarity: 'uncommon', price: Math.floor(40 + Math.random() * 15) },
+        { emoji: '🧣', name: 'Écharpe Lumineuse', rarity: 'common', price: Math.floor(15 + Math.random() * 10) },
+        { emoji: '🦺', name: 'Gilet Fluo', rarity: 'uncommon', price: Math.floor(35 + Math.random() * 15) },
+        { emoji: '👔', name: 'Cravate LED', rarity: 'rare', price: Math.floor(60 + Math.random() * 20) },
+        { emoji: '🎀', name: 'Nœud Électronique', rarity: 'rare', price: Math.floor(70 + Math.random() * 20) },
+        { emoji: '👓', name: 'Lunettes Neon', rarity: 'common', price: Math.floor(25 + Math.random() * 10) },
+        { emoji: '🧤', name: 'Gants Tactiles', rarity: 'uncommon', price: Math.floor(45 + Math.random() * 15) },
+        { emoji: '💎', name: 'Cristal Holographique', rarity: 'epic', price: Math.floor(150 + Math.random() * 50) }
       ];
       
       // Generate random items
@@ -2482,22 +2655,22 @@
       container.innerHTML = '';
       
       if (marketItems.length === 0) {
-        container.innerHTML = '<p class="text-center py-4 text-gray-500">Aucun objet disponible. Actualisez le marché.</p>';
+        container.innerHTML = '<p class="text-center py-4 text-gray-300">Aucun objet disponible. Actualisez le marché.</p>';
         return;
       }
       
       // Color classes for different rarity levels
       const rarityClasses = {
-        common: 'text-gray-500',
-        uncommon: 'text-green-500',
-        rare: 'text-blue-500',
-        epic: 'text-purple-500',
-        legendary: 'text-yellow-500'
+        common: 'text-gray-300',
+        uncommon: 'text-green-300',
+        rare: 'text-synthwave-blue',
+        epic: 'text-synthwave-purple',
+        legendary: 'text-yellow-300'
       };
       
       marketItems.forEach(item => {
         const itemEl = document.createElement('div');
-        itemEl.className = 'p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700';
+        itemEl.className = 'p-4 bg-black/40 dark:bg-gray-900/40 rounded-xl border border-white/10 backdrop-blur-md';
         
         itemEl.innerHTML = `
           <div class="flex items-center justify-between">
@@ -2505,11 +2678,11 @@
               <div class="text-3xl mr-3 ${item.rarity === 'legendary' ? 'animate-pulse' : ''}">${item.emoji}</div>
               <div>
                 <h3 class="font-bold ${rarityClasses[item.rarity] || ''}">${item.name}</h3>
-                <p class="text-xs text-gray-500">${item.seller}</p>
+                <p class="text-xs text-gray-400">${item.seller}</p>
                 <p class="text-xs ${rarityClasses[item.rarity] || ''} font-medium">${item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)}</p>
               </div>
             </div>
-            <button class="market-buy-btn px-3 py-1 ${gameCoins >= item.price ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'} text-white rounded-lg flex items-center" data-item-id="${item.id}" ${gameCoins < item.price ? 'disabled' : ''}>
+            <button class="market-buy-btn px-3 py-1 ${gameCoins >= item.price ? 'bg-success hover:bg-success/80' : 'bg-gray-500/50 cursor-not-allowed'} text-white rounded-lg flex items-center" data-item-id="${item.id}" ${gameCoins < item.price ? 'disabled' : ''}>
               <span>${item.price}</span>
               <span class="ml-1">🪙</span>
             </button>
@@ -2714,13 +2887,13 @@
         shopModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden';
         
         shopModal.innerHTML = `
-          <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+          <div class="ios-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-              <h2 class="text-2xl font-semibold flex items-center">
+              <h2 class="text-2xl font-semibold flex items-center text-white">
                 <span class="mr-2">🛒</span>
                 Boutique
               </h2>
-              <div class="bg-amber-100 dark:bg-amber-900 px-3 py-1 rounded-full text-amber-800 dark:text-amber-100 font-medium">
+              <div class="bg-amber-900/40 px-3 py-1 rounded-full text-amber-200 font-medium backdrop-blur-sm border border-amber-500/20">
                 <span id="shopCoins">${gameCoins}</span> 🪙
               </div>
             </div>
@@ -2729,7 +2902,7 @@
               <!-- Shop items will be listed here -->
             </div>
             
-            <button id="closeShop" class="oneui-button w-full py-3 px-4 bg-primary hover:bg-secondary text-white font-medium">
+            <button id="closeShop" class="ios-button synthwave-button w-full py-3 px-4 bg-synthwave-blue hover:bg-synthwave-blue/90 text-white font-medium">
               Fermer
             </button>
           </div>
@@ -2764,17 +2937,17 @@
       
       shopItems.forEach(item => {
         const itemEl = document.createElement('div');
-        itemEl.className = 'p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center justify-between';
+        itemEl.className = 'p-4 bg-black/40 dark:bg-gray-900/40 rounded-xl border border-white/10 backdrop-blur-md flex items-center justify-between';
         
         itemEl.innerHTML = `
           <div class="flex items-center">
             <div class="text-3xl mr-3">${item.emoji}</div>
             <div>
-              <h3 class="font-bold">${item.name}</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">${item.description}</p>
+              <h3 class="font-bold text-white">${item.name}</h3>
+              <p class="text-sm text-gray-300">${item.description}</p>
             </div>
           </div>
-          <button class="buy-item-btn px-3 py-1 ${gameCoins >= item.price ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'} text-white rounded-lg flex items-center" data-item-id="${item.id}" ${gameCoins < item.price ? 'disabled' : ''}>
+          <button class="buy-item-btn px-3 py-1 ${gameCoins >= item.price ? 'bg-success hover:bg-success/80' : 'bg-gray-500/50 cursor-not-allowed'} text-white rounded-lg flex items-center" data-item-id="${item.id}" ${gameCoins < item.price ? 'disabled' : ''}>
             <span>${item.price}</span>
             <span class="ml-1">🪙</span>
           </button>
@@ -2848,8 +3021,8 @@
         
         if (gameCoins < btnItem.price) {
           btn.disabled = true;
-          btn.classList.remove('bg-green-500', 'hover:bg-green-600');
-          btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+          btn.classList.remove('bg-success', 'hover:bg-success/80');
+          btn.classList.add('bg-gray-500/50', 'cursor-not-allowed');
         }
       });
       
@@ -2860,7 +3033,7 @@
     // Show toast message
     function showToast(message) {
       const toast = document.createElement('div');
-      toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-80 text-white py-2 px-4 rounded-lg z-50';
+      toast.className = 'fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black/80 backdrop-blur-lg text-white py-2 px-4 rounded-lg z-50 border border-synthwave-purple/50';
       toast.textContent = message;
       
       document.body.appendChild(toast);
