@@ -301,8 +301,14 @@
     <header class="flex flex-col sm:flex-row justify-between items-center mb-6">
       <h1 id="gameTitle" class="text-3xl font-bold text-primary mb-2 sm:mb-0">EmojiPet</h1>
       <div class="flex space-x-2">
+        <button id="questsButton" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
+          <span class="text-xl">📋</span>
+        </button>
         <button id="achievementsButton" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
           <span class="text-xl">🏆</span>
+        </button>
+        <button id="marketButton" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
+          <span class="text-xl">🛍️</span>
         </button>
         <button id="rgbModeToggle" class="p-3 rounded-full bg-oneui-light-card dark:bg-oneui-dark-card">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -831,7 +837,76 @@
     </div>
   </div>
   
-  <!-- Achievement Notification -->
+  <!-- Quests Modal -->
+  <div id="questsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
+    <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-semibold flex items-center">
+          <span class="mr-2">📋</span>
+          Quêtes
+        </h2>
+        <div class="bg-amber-100 dark:bg-amber-900 px-3 py-1 rounded-full text-amber-800 dark:text-amber-100 font-medium">
+          <span id="questCoins">${gameCoins}</span> 🪙
+        </div>
+      </div>
+      
+      <div id="questsList" class="space-y-4 mb-6">
+        <!-- Quests will be listed here -->
+      </div>
+      
+      <button id="closeQuests" class="oneui-button w-full py-3 px-4 bg-primary hover:bg-secondary text-white font-medium">
+        Fermer
+      </button>
+    </div>
+  </div>
+  
+  <!-- Market Modal -->
+  <div id="marketModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 hidden">
+    <div class="oneui-card bg-oneui-light-card dark:bg-oneui-dark-card p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-semibold flex items-center">
+          <span class="mr-2">🛍️</span>
+          Marché des Joueurs
+        </h2>
+        <div class="bg-amber-100 dark:bg-amber-900 px-3 py-1 rounded-full text-amber-800 dark:text-amber-100 font-medium">
+          <span id="marketCoins">${gameCoins}</span> 🪙
+        </div>
+      </div>
+      
+      <div class="mb-4">
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="font-semibold">Objets disponibles</h3>
+          <button id="refreshMarket" class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm hover:bg-gray-200 dark:hover:bg-gray-600">
+            🔄 Actualiser
+          </button>
+        </div>
+        <div id="marketItemsList" class="space-y-3">
+          <!-- Market items will be listed here -->
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
+        <h3 class="font-semibold mb-2">Mettre en vente un objet</h3>
+        <div id="sellItemSection" class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+          <select id="sellItemType" class="w-full p-2 mb-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+            <option value="">Sélectionner un type d'objet</option>
+            <option value="accessory">Accessoire</option>
+            <option value="potion">Potion</option>
+          </select>
+          <div class="flex space-x-2">
+            <input type="number" id="sellItemPrice" min="1" max="1000" placeholder="Prix" class="p-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 w-1/2">
+            <button id="sellItemBtn" class="p-2 bg-primary hover:bg-secondary text-white rounded-lg flex-1">Mettre en vente</button>
+          </div>
+        </div>
+      </div>
+      
+      <button id="closeMarket" class="oneui-button w-full py-3 px-4 bg-primary hover:bg-secondary text-white font-medium">
+        Fermer
+      </button>
+    </div>
+  </div>
+  
+  <!-- Quest/Achievement Notification -->
   <div id="achievementNotification" class="fixed top-4 right-4 z-50 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-500 ease-out flex items-center">
     <div class="text-3xl mr-3 achievement-icon"></div>
     <div>
@@ -874,12 +949,79 @@
     let selectedAccessory = null;
     let selectedReligion = null;
     let achievements = [];
+    let quests = [];         // Quêtes du joueur
     let playerLevel = 1;
     let playerXP = 0;
-    let gameCoins = 100; // Monnaie du jeu
+    let gameCoins = 100;     // Monnaie du jeu
+    let marketItems = [];    // Objets sur le marché
     
     // Emojis and emotions
     const petEmotions = ['😃', '😊', '😢', '😍', '😴', '🤒', '😋'];
+    
+    // Quêtes disponibles
+    const availableQuests = [
+      {
+        id: 'play5times',
+        name: 'Jouer 5 fois',
+        description: 'Jouer 5 fois avec un EmojiPet',
+        icon: '🎮',
+        requirement: 5,
+        progress: 0,
+        completed: false,
+        coinReward: 10
+      },
+      {
+        id: 'reach100xp',
+        name: 'Expert XP',
+        description: 'Atteindre 100 XP avec un EmojiPet',
+        icon: '📈',
+        requirement: 100,
+        progress: 0, // Sera mis à jour avec l'XP du pet
+        completed: false,
+        coinReward: 50
+      },
+      {
+        id: 'buyAccessory',
+        name: 'Fashionista',
+        description: 'Acheter un accessoire à la boutique',
+        icon: '👒',
+        requirement: 1,
+        progress: 0,
+        completed: false,
+        xpReward: 5,
+        coinReward: 0
+      },
+      {
+        id: 'evolve1time',
+        name: 'Évolution',
+        description: 'Faire évoluer un EmojiPet une fois',
+        icon: '⭐',
+        requirement: 1,
+        progress: 0,
+        completed: false,
+        coinReward: 20
+      },
+      {
+        id: 'clean3times',
+        name: 'Nettoyage',
+        description: 'Nettoyer un EmojiPet 3 fois',
+        icon: '🧼',
+        requirement: 3,
+        progress: 0,
+        completed: false,
+        coinReward: 5
+      },
+      {
+        id: 'sleep2times',
+        name: 'Bonne nuit',
+        description: 'Faire dormir un EmojiPet 2 fois',
+        icon: '😴',
+        requirement: 2,
+        progress: 0,
+        completed: false,
+        coinReward: 5
+      }
+    ];
     
     // Achievements data
     const availableAchievements = [
@@ -1166,6 +1308,7 @@
           happiness: 100,
           hunger: 80,
           cleanliness: 100,
+          energy: 100,
           xp: 0,
           evolutionStage: 0,
           evolutionThreshold: 100,
@@ -1191,9 +1334,24 @@
         achievements = JSON.parse(JSON.stringify(availableAchievements));
       }
       
-      // Setup achievements modal
+      // Initialize quests
+      if (quests.length === 0) {
+        quests = JSON.parse(JSON.stringify(availableQuests));
+      }
+      
+      // Setup modal buttons
       document.getElementById('achievementsButton').addEventListener('click', showAchievementsModal);
       document.getElementById('closeAchievements').addEventListener('click', hideAchievementsModal);
+      document.getElementById('questsButton').addEventListener('click', showQuestsModal);
+      document.getElementById('closeQuests').addEventListener('click', hideQuestsModal);
+      document.getElementById('marketButton').addEventListener('click', showMarketModal);
+      document.getElementById('closeMarket').addEventListener('click', hideMarketModal);
+      document.getElementById('refreshMarket').addEventListener('click', () => {
+        generateMarketItems();
+        renderMarketItems();
+        showToast("🔄 Marché actualisé !");
+      });
+      
       document.getElementById('complimentPet').addEventListener('click', showComplimentModal);
       document.getElementById('marryPet').addEventListener('click', showMarriageModal);
       document.getElementById('cancelMarriage').addEventListener('click', hideMarriageModal);
@@ -2160,6 +2318,324 @@
     // Hide delete confirmation modal
     function hideDeleteConfirmation() {
       document.getElementById('deleteModal').classList.add('hidden');
+    }
+    
+    // Update and track quest progress
+    function updateQuest(questId, progress) {
+      const quest = quests.find(q => q.id === questId);
+      if (!quest || quest.completed) return;
+      
+      quest.progress += progress;
+      
+      // Check if quest is completed
+      if (quest.progress >= quest.requirement && !quest.completed) {
+        quest.completed = true;
+        
+        // Grant rewards
+        if (quest.coinReward) {
+          gameCoins += quest.coinReward;
+          updateCoinsDisplay();
+        }
+        
+        if (quest.xpReward && selectedPet) {
+          const pet = pets.find(p => p.id === selectedPet.id);
+          if (pet) {
+            pet.xp += quest.xpReward;
+            renderPetDetails(pet);
+          }
+        }
+        
+        // Show notification
+        showQuestCompletionNotification(quest);
+      }
+    }
+    
+    // Show quest completion notification
+    function showQuestCompletionNotification(quest) {
+      const notification = document.getElementById('achievementNotification');
+      const icon = notification.querySelector('.achievement-icon');
+      const title = notification.querySelector('.achievement-title');
+      const desc = notification.querySelector('.achievement-desc');
+      
+      icon.textContent = quest.icon;
+      title.textContent = 'Quête complétée!';
+      desc.textContent = `${quest.name}: ${quest.coinReward ? '+'+quest.coinReward+' 🪙' : ''} ${quest.xpReward ? '+'+quest.xpReward+' XP' : ''}`;
+      
+      // Show notification
+      notification.style.transform = 'translateX(0)';
+      
+      // Hide notification after 5 seconds
+      setTimeout(() => {
+        notification.style.transform = 'translateX(calc(100% + 1rem))';
+      }, 5000);
+    }
+    
+    // Render quests list
+    function renderQuests() {
+      const container = document.getElementById('questsList');
+      container.innerHTML = '';
+      
+      quests.forEach(quest => {
+        const questEl = document.createElement('div');
+        questEl.className = `p-4 ${quest.completed ? 'bg-amber-50 dark:bg-amber-900/30' : 'bg-white dark:bg-gray-800'} rounded-xl border ${quest.completed ? 'border-amber-500' : 'border-gray-200 dark:border-gray-700'}`;
+        
+        const progress = Math.min(quest.progress, quest.requirement);
+        const percentage = Math.floor((progress / quest.requirement) * 100);
+        
+        questEl.innerHTML = `
+          <div class="flex items-center mb-2">
+            <div class="text-3xl mr-3">${quest.icon}</div>
+            <div>
+              <h3 class="font-bold text-lg">${quest.name} ${quest.completed ? '✅' : ''}</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">${quest.description}</p>
+            </div>
+          </div>
+          <div class="mt-2">
+            <div class="h-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full ${quest.completed ? 'bg-amber-500' : 'bg-gray-400 dark:bg-gray-500'} rounded-full" style="width: ${percentage}%"></div>
+            </div>
+            <p class="text-xs text-right mt-1 ${quest.completed ? 'text-amber-500' : 'text-gray-500'}">${progress}/${quest.requirement}</p>
+          </div>
+          ${quest.completed ? `<p class="text-sm text-amber-500 mt-2">
+            ${quest.coinReward ? `+${quest.coinReward} 🪙` : ''}
+            ${quest.xpReward ? `+${quest.xpReward} XP` : ''}
+          </p>` : ''}
+        `;
+        
+        container.appendChild(questEl);
+      });
+    }
+    
+    // Show quests modal
+    function showQuestsModal() {
+      renderQuests();
+      document.getElementById('questCoins').textContent = gameCoins;
+      document.getElementById('questsModal').classList.remove('hidden');
+    }
+    
+    // Hide quests modal
+    function hideQuestsModal() {
+      document.getElementById('questsModal').classList.add('hidden');
+    }
+    
+    // Update all coins displays
+    function updateCoinsDisplay() {
+      document.getElementById('coinDisplay').textContent = gameCoins;
+      
+      // Update in modals if they exist
+      if (document.getElementById('questCoins')) {
+        document.getElementById('questCoins').textContent = gameCoins;
+      }
+      if (document.getElementById('shopCoins')) {
+        document.getElementById('shopCoins').textContent = gameCoins;
+      }
+      if (document.getElementById('marketCoins')) {
+        document.getElementById('marketCoins').textContent = gameCoins;
+      }
+    }
+    
+    // Generate random market items
+    function generateMarketItems() {
+      // Clear existing items
+      marketItems = [];
+      
+      // Random number of items (3-6)
+      const numItems = 3 + Math.floor(Math.random() * 4);
+      
+      // Generate random sellers
+      const sellerNames = ['EmojiMaster42', 'PetLover99', 'AnimalFriend', 'EmojiFan2023', 'VirtualPetPro'];
+      
+      // Possible accessories
+      const marketAccessories = [
+        { emoji: '👑', name: 'Couronne Royale', rarity: 'legendary', price: Math.floor(280 + Math.random() * 50) },
+        { emoji: '🎩', name: 'Chapeau Haut-de-forme', rarity: 'rare', price: Math.floor(80 + Math.random() * 20) },
+        { emoji: '🧢', name: 'Casquette', rarity: 'common', price: Math.floor(20 + Math.random() * 10) },
+        { emoji: '🕶️', name: 'Lunettes de Soleil', rarity: 'uncommon', price: Math.floor(40 + Math.random() * 15) },
+        { emoji: '🧣', name: 'Écharpe', rarity: 'common', price: Math.floor(15 + Math.random() * 10) },
+        { emoji: '🦺', name: 'Gilet de Sécurité', rarity: 'uncommon', price: Math.floor(35 + Math.random() * 15) },
+        { emoji: '👔', name: 'Cravate', rarity: 'rare', price: Math.floor(60 + Math.random() * 20) },
+        { emoji: '🎀', name: 'Nœud Papillon Rose', rarity: 'rare', price: Math.floor(70 + Math.random() * 20) },
+        { emoji: '👓', name: 'Lunettes', rarity: 'common', price: Math.floor(25 + Math.random() * 10) },
+        { emoji: '🧤', name: 'Gants', rarity: 'uncommon', price: Math.floor(45 + Math.random() * 15) },
+        { emoji: '💎', name: 'Bijou Précieux', rarity: 'epic', price: Math.floor(150 + Math.random() * 50) }
+      ];
+      
+      // Generate random items
+      for (let i = 0; i < numItems; i++) {
+        const item = marketAccessories[Math.floor(Math.random() * marketAccessories.length)];
+        
+        marketItems.push({
+          id: 'market_' + Date.now() + '_' + i,
+          emoji: item.emoji,
+          name: item.name,
+          rarity: item.rarity,
+          price: item.price,
+          type: 'accessory',
+          seller: sellerNames[Math.floor(Math.random() * sellerNames.length)]
+        });
+      }
+    }
+    
+    // Render market items
+    function renderMarketItems() {
+      const container = document.getElementById('marketItemsList');
+      container.innerHTML = '';
+      
+      if (marketItems.length === 0) {
+        container.innerHTML = '<p class="text-center py-4 text-gray-500">Aucun objet disponible. Actualisez le marché.</p>';
+        return;
+      }
+      
+      // Color classes for different rarity levels
+      const rarityClasses = {
+        common: 'text-gray-500',
+        uncommon: 'text-green-500',
+        rare: 'text-blue-500',
+        epic: 'text-purple-500',
+        legendary: 'text-yellow-500'
+      };
+      
+      marketItems.forEach(item => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700';
+        
+        itemEl.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="text-3xl mr-3 ${item.rarity === 'legendary' ? 'animate-pulse' : ''}">${item.emoji}</div>
+              <div>
+                <h3 class="font-bold ${rarityClasses[item.rarity] || ''}">${item.name}</h3>
+                <p class="text-xs text-gray-500">${item.seller}</p>
+                <p class="text-xs ${rarityClasses[item.rarity] || ''} font-medium">${item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)}</p>
+              </div>
+            </div>
+            <button class="market-buy-btn px-3 py-1 ${gameCoins >= item.price ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-400 cursor-not-allowed'} text-white rounded-lg flex items-center" data-item-id="${item.id}" ${gameCoins < item.price ? 'disabled' : ''}>
+              <span>${item.price}</span>
+              <span class="ml-1">🪙</span>
+            </button>
+          </div>
+        `;
+        
+        container.appendChild(itemEl);
+      });
+      
+      // Add event listeners to buy buttons
+      document.querySelectorAll('.market-buy-btn').forEach(btn => {
+        if (!btn.disabled) {
+          btn.addEventListener('click', function() {
+            const itemId = this.dataset.itemId;
+            buyMarketItem(itemId);
+          });
+        }
+      });
+    }
+    
+    // Buy an item from the market
+    function buyMarketItem(itemId) {
+      if (!selectedPet) {
+        alert('Veuillez d\'abord sélectionner un EmojiPet');
+        return;
+      }
+      
+      const item = marketItems.find(i => i.id === itemId);
+      if (!item) return;
+      
+      // Check if player has enough coins
+      if (gameCoins < item.price) {
+        return;
+      }
+      
+      // Deduct coins
+      gameCoins -= item.price;
+      updateCoinsDisplay();
+      
+      // Find pet
+      const pet = pets.find(p => p.id === selectedPet.id);
+      if (!pet) return;
+      
+      // Apply item effect (for now, only accessories)
+      pet.accessory = item.emoji;
+      
+      // Remove item from market
+      marketItems = marketItems.filter(i => i.id !== itemId);
+      
+      // Update UI
+      savePets();
+      renderPets();
+      renderPetDetails(pet);
+      renderMarketItems();
+      
+      // Show success animation with equipped accessory
+      showItemEquipAnimation(item.emoji, pet);
+      
+      // Show toast message
+      showToast(`${item.emoji} ${item.name} acheté et équipé à ${pet.name}!`);
+      
+      // Update quest progress for buying an accessory
+      updateQuest('buyAccessory', 1);
+    }
+    
+    // Show item equip animation
+    function showItemEquipAnimation(itemEmoji, pet) {
+      const petEl = document.querySelector(`[data-pet-id="${pet.id}"]`);
+      if (!petEl) return;
+      
+      // Create floating animation for the item
+      const animation = document.createElement('div');
+      animation.className = 'absolute';
+      animation.textContent = itemEmoji;
+      animation.style.fontSize = '2rem';
+      animation.style.zIndex = '100';
+      animation.style.left = '50%';
+      animation.style.top = '50%';
+      animation.style.transform = 'translate(-50%, -50%)';
+      
+      petEl.appendChild(animation);
+      
+      // Animate the item floating onto the pet
+      animation.animate([
+        { transform: 'translate(-50%, -150%)', opacity: 0 },
+        { transform: 'translate(-50%, -70%)', opacity: 1 },
+        { transform: 'translate(-50%, -50%)', opacity: 0 }
+      ], {
+        duration: 1500,
+        easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+      }).onfinish = () => animation.remove();
+      
+      // Add a sparkle effect
+      const sparkle = document.createElement('div');
+      sparkle.className = 'absolute inset-0 flex items-center justify-center';
+      sparkle.innerHTML = '✨';
+      sparkle.style.fontSize = '3rem';
+      sparkle.style.opacity = '0';
+      sparkle.style.zIndex = '90';
+      
+      petEl.appendChild(sparkle);
+      
+      sparkle.animate([
+        { transform: 'scale(0.5)', opacity: 0 },
+        { transform: 'scale(1.5)', opacity: 1 },
+        { transform: 'scale(2)', opacity: 0 }
+      ], {
+        duration: 1200,
+        easing: 'ease-out'
+      }).onfinish = () => sparkle.remove();
+    }
+    
+    // Show market modal
+    function showMarketModal() {
+      if (marketItems.length === 0) {
+        generateMarketItems();
+      }
+      
+      document.getElementById('marketCoins').textContent = gameCoins;
+      renderMarketItems();
+      document.getElementById('marketModal').classList.remove('hidden');
+    }
+    
+    // Hide market modal
+    function hideMarketModal() {
+      document.getElementById('marketModal').classList.add('hidden');
     }
     
     // Delete the selected pet
